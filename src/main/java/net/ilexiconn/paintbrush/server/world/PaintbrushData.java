@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.storage.MapStorage;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class PaintbrushData extends WorldSavedData {
     private List<Paint> paintList = Lists.newArrayList();
+    public static PaintbrushData instance;
 
     public PaintbrushData() {
         super("paintbrush");
@@ -75,11 +77,25 @@ public class PaintbrushData extends WorldSavedData {
     }
 
     public static PaintbrushData get(World world) {
-        PaintbrushData data = (PaintbrushData) world.loadItemData(PaintbrushData.class, "paintbrush");
-        if (data == null) {
-            data = new PaintbrushData();
-            world.setItemData("paintbrush", data);
+        if (PaintbrushData.instance == null) {
+            if(!world.isRemote) {
+                MapStorage storage = world.perWorldStorage;
+
+                PaintbrushData result = (PaintbrushData) storage.loadData(PaintbrushData.class, "paintbrush");
+                if (result == null) {
+                    result = new PaintbrushData("paintbrush");
+                    result.markDirty();
+                    storage.setData("paintbrush", result);
+                }
+
+                PaintbrushData.instance = result;
+
+                return result;
+            }
+
+            return null;
         }
-        return data;
-    }
+
+		return PaintbrushData.instance;
+	}
 }
