@@ -27,7 +27,7 @@ public class PaintbrushData extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        NBTTagList paint = compound.getTagList("Paint", Constants.NBT.TAG_COMPOUND);
+        NBTTagList paint = compound.getTagList("Paint", Constants.NBT.TAG_LIST);
 
         for (int i = 0; i < paint.tagCount(); i++) {
             NBTTagCompound paintTag = paint.getCompoundTagAt(i);
