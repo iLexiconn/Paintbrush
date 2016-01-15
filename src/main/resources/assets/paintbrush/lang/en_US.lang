@@ -1,0 +1,21 @@
+item.paintbrush.name=Paintbrush
+
+tooltip.paintbrush.color=Color
+tooltip.paintbrush.size=Size
+
+color.black.name=Black
+color.dark_blue.name=Dark blue
+color.dark_green.name=Dark green
+color.dark_aqua.name=Dark aqua
+color.dark_red.name=Dark red
+color.dark_purple.name=Dark purple
+color.gold.name=Gold
+color.gray.name=Gray
+color.dark_gray.name=Dark gray
+color.blue.name=Blue
+color.green.name=Green
+color.aqua.name=Aqua
+color.red.name=Red
+color.light_purple.name=Purple
+color.yellow.name=Yellow
+color.white.name=White

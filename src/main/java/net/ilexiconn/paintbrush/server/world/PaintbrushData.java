@@ -78,7 +78,7 @@ public class PaintbrushData extends WorldSavedData {
 
     public static PaintbrushData get(World world) {
         if (PaintbrushData.instance == null) {
-            if(!world.isRemote) {
+            if (!world.isRemote) {
                 MapStorage storage = world.perWorldStorage;
 
                 PaintbrushData result = (PaintbrushData) storage.loadData(PaintbrushData.class, "paintbrush");
@@ -96,6 +96,6 @@ public class PaintbrushData extends WorldSavedData {
             return null;
         }
 
-		return PaintbrushData.instance;
-	}
+        return PaintbrushData.instance;
+    }
 }
