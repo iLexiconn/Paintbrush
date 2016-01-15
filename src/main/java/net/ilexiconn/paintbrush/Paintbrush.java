@@ -7,7 +7,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.ilexiconn.paintbrush.server.CommonEventHandler;
 import net.ilexiconn.paintbrush.server.ServerProxy;
-import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
+import net.ilexiconn.paintbrush.server.item.ItemPaintbrush;
 import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = "0.1.0")
@@ -17,7 +17,7 @@ public class Paintbrush {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        GameRegistry.registerItem(new PaintbrushItem(), "paintbrush");
+        GameRegistry.registerItem(new ItemPaintbrush(), "paintbrush");
         proxy.init();
 
         CommonEventHandler eventHandler = new CommonEventHandler();
