@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.ilexiconn.paintbrush.server.util.BlockPos;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -19,14 +20,18 @@ public class ClientEventHandler {
     public void onWorldRenderLast(RenderWorldLastEvent event) {
         Tessellator tessellator = Tessellator.instance;
         for (Paint paint : paintList) {
-            System.out.println("Rendering " + paint.getColor());
             tessellator.startDrawingQuads();
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             GL11.glDisable(GL11.GL_CULL_FACE);
-            tessellator.addVertex(paint.getPos().getX(), paint.getPos().getY(), paint.getPos().getZ());
-            tessellator.addVertex(paint.getPos().getX() + 1, paint.getPos().getY(), paint.getPos().getZ());
-            tessellator.addVertex(paint.getPos().getX() + 1, paint.getPos().getY() + 1, paint.getPos().getZ());
-            tessellator.addVertex(paint.getPos().getX(), paint.getPos().getY() + 1, paint.getPos().getZ());
+            BlockPos pos = paint.getPos();
+            int x = pos.getX();
+            int y = pos.getY();
+            int z = pos.getZ();
+
+            tessellator.addVertex(x, y, z);
+            tessellator.addVertex(x + 1, y, z);
+            tessellator.addVertex(x + 1, y + 1, z);
+            tessellator.addVertex(x, y + 1, z);
             tessellator.draw();
         }
     }
