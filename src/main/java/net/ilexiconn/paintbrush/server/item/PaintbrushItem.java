@@ -35,15 +35,23 @@ public class PaintbrushItem extends Item {
     }
 
     public int getInkFromDamage(ItemStack stack) {
-        return stack.getItemDamage() >>> 4;
+        return (stack.getItemDamage() >>> 4) & 0b111111;
     }
 
-    public int getDamageForColorAndInk(int color, int ink) {
-        return (color & 0b1111) | (ink << 4);
+    public int getSizeFromDamage(ItemStack stack) {
+        return (stack.getItemDamage() >>> 10) & 0b111;
+    }
+
+    public int getDamage(int color, int ink, int size) {
+        return (color & 0b1111) | (ink << 4) | (size << 10);
     }
 
     public void setInk(ItemStack stack, int ink) {
-        stack.setItemDamage(getDamageForColorAndInk(getColorFromDamage(stack), ink));
+        stack.setItemDamage(getDamage(getColorFromDamage(stack), ink, getSizeFromDamage(stack)));
+    }
+
+    public void setSize(ItemStack stack, int size) {
+        stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size));
     }
 
     @SideOnly(Side.CLIENT)
@@ -66,8 +74,7 @@ public class PaintbrushItem extends Item {
     @Override
     public int getColorFromItemStack(ItemStack stack, int renderPass) {
         if (renderPass != 0) {
-            int damage = stack.getItemDamage();
-            EnumChatFormatting color = EnumChatFormatting.values()[damage];
+            EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
             return getColorCode(color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
         } else {
             return 0xFFFFFF;
@@ -78,8 +85,7 @@ public class PaintbrushItem extends Item {
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             PaintbrushData data = PaintbrushData.get(world);
-            int damage = stack.getItemDamage();
-            EnumChatFormatting color = EnumChatFormatting.values()[damage];
+            EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
             Paint paint = new Paint(color, itemRand.nextInt(15), itemRand.nextInt(15), EnumFacing.values()[face], new BlockPos(x, y, z));
             data.addPaint(paint);
         }
@@ -90,17 +96,17 @@ public class PaintbrushItem extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean advancedTooltips) {
-        int damage = stack.getItemDamage();
-        EnumChatFormatting color = EnumChatFormatting.values()[damage];
+        EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name"));
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": 1");
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + getSizeFromDamage(stack));
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + getInkFromDamage(stack));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
         for (int dyeType = 0; dyeType < 16; dyeType++) {
-            items.add(new ItemStack(item, 1, dyeType));
+            items.add(new ItemStack(item, 1, getDamage(dyeType, itemRand.nextInt(64) + 1, itemRand.nextInt(5) + 1)));
         }
     }
 

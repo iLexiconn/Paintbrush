@@ -2,6 +2,7 @@ item.paintbrush.name=Paintbrush
 
 tooltip.paintbrush.color=Color
 tooltip.paintbrush.size=Size
+tooltip.paintbrush.ink=Ink
 
 color.black.name=Black
 color.dark_blue.name=Dark Blue
