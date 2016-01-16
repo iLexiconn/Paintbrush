@@ -11,11 +11,13 @@ import net.ilexiconn.paintbrush.server.ServerProxy;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.MessageUpdatePaint;
 
-@Mod(modid = "paintbrush", name = "Paintbrush", version = "0.1.0")
+@Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
     @SidedProxy(serverSide = "net.ilexiconn.paintbrush.server.ServerProxy", clientSide = "net.ilexiconn.paintbrush.client.ClientProxy")
     public static ServerProxy proxy;
     public static SimpleNetworkWrapper networkWrapper;
+
+    public static final String VERSION = "0.1.0";
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
