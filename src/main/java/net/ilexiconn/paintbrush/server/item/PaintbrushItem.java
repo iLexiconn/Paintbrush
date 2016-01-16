@@ -30,6 +30,20 @@ public class PaintbrushItem extends Item {
         setTextureName("paintbrush:paintbrush");
     }
 
+    //000000|0000
+
+    public int getColorFromDamage(int damage) {
+        return damage & 15;
+    }
+
+    public int getInkFromDamage(int damage) {
+        return damage << 4;
+    }
+
+    public int getDamageForColorAndInk(int color, int ink) {
+        return color | (ink << 4);
+    }
+
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister iconRegister) {
         super.registerIcons(iconRegister);
