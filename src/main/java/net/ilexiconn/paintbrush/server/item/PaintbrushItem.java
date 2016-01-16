@@ -33,7 +33,7 @@ public class PaintbrushItem extends Item {
     //000000|0000
 
     public int getColorFromDamage(int damage) {
-        return damage & 0xF;
+        return damage & 0b1111;
     }
 
     public int getInkFromDamage(int damage) {
@@ -41,7 +41,7 @@ public class PaintbrushItem extends Item {
     }
 
     public int getDamageForColorAndInk(int color, int ink) {
-        return (color & 0x0F) | (ink << 4);
+        return (color & 0b1111) | (ink << 4);
     }
 
     @SideOnly(Side.CLIENT)
