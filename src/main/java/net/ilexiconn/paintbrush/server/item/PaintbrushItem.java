@@ -30,18 +30,20 @@ public class PaintbrushItem extends Item {
         setTextureName("paintbrush:paintbrush");
     }
 
-    //000000|0000
-
-    public int getColorFromDamage(int damage) {
-        return damage & 0b1111;
+    public int getColorFromDamage(ItemStack stack) {
+        return stack.getItemDamage() & 0b1111;
     }
 
-    public int getInkFromDamage(int damage) {
-        return damage >>> 4;
+    public int getInkFromDamage(ItemStack stack) {
+        return stack.getItemDamage() >>> 4;
     }
 
     public int getDamageForColorAndInk(int color, int ink) {
         return (color & 0b1111) | (ink << 4);
+    }
+
+    public void setInk(ItemStack stack, int ink) {
+        stack.setItemDamage(getDamageForColorAndInk(getColorFromDamage(stack), ink));
     }
 
     @SideOnly(Side.CLIENT)
