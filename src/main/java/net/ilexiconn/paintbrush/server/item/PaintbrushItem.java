@@ -48,14 +48,6 @@ public class PaintbrushItem extends Item {
         return (color & 0b1111) | (ink << 4) | (size << 10);
     }
 
-    public void setInk(ItemStack stack, int ink) {
-        stack.setItemDamage(getDamage(getColorFromDamage(stack), ink, getSizeFromDamage(stack)));
-    }
-
-    public void setSize(ItemStack stack, int size) {
-        stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size));
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public int getDisplayDamage(ItemStack stack) {
@@ -64,7 +56,7 @@ public class PaintbrushItem extends Item {
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        return stack.isItemDamaged();
+        return true;
     }
 
     @SideOnly(Side.CLIENT)
@@ -80,7 +72,7 @@ public class PaintbrushItem extends Item {
 
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamageForRenderPass(int damage, int pass) {
-        return pass == 0 || damage == getMaxDamage() ? itemIcon : colorOverlay;
+        return pass == 0 || ((damage >>> 4) & 0b111111) == getMaxDamage() ? itemIcon : colorOverlay;
     }
 
     @Override
@@ -96,14 +88,23 @@ public class PaintbrushItem extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
-        if (!world.isRemote) {
+        /*if (!world.isRemote) {
             PaintbrushData data = PaintbrushData.get(world);
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
             Paint paint = new Paint(color, (int) Math.floor(hitX / 0.0625f), (int) Math.floor(hitY / 0.0625f), EnumFacing.values()[face], new BlockPos(x, y, z));
             data.addPaint(paint);
+        }*/
+        if (!world.isRemote) {
+            int color = getColorFromDamage(stack);
+            int ink = getInkFromDamage(stack);
+            int size = getSizeFromDamage(stack);
+            System.out.println(getDamage(color, ink, size));
+            System.out.println(color);
+            System.out.println(ink);
+            System.out.println(size);
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -119,7 +120,7 @@ public class PaintbrushItem extends Item {
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
         for (int i = 0; i < 16; i++) {
-            items.add(new ItemStack(item, 1, getDamage(i, itemRand.nextInt(65), itemRand.nextInt(5) + 1)));
+            items.add(new ItemStack(item, 1, getDamage(i, 0, 1)));
         }
     }
 
