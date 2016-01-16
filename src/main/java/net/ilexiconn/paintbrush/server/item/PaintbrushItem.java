@@ -34,8 +34,9 @@ public class PaintbrushItem extends Item {
         return stack.getItemDamage() & 0b1111;
     }
 
+    @SuppressWarnings("deprecation")
     public int getInkFromDamage(ItemStack stack) {
-        return (stack.getItemDamage() >>> 4) & 0b111111;
+        return (stack.getItem().getDisplayDamage(stack) >>> 4) & 0b111111;
     }
 
     public int getSizeFromDamage(ItemStack stack) {
@@ -54,6 +55,21 @@ public class PaintbrushItem extends Item {
         stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size));
     }
 
+    @Override
+    public int getMaxDamage() {
+        return 64;
+    }
+
+    @Override
+    public int getDamage(ItemStack stack) {
+        return getInkFromDamage(stack);
+    }
+
+    @Override
+    public boolean showDurabilityBar(ItemStack stack) {
+        return true;
+    }
+
     @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister iconRegister) {
         super.registerIcons(iconRegister);
@@ -67,13 +83,13 @@ public class PaintbrushItem extends Item {
 
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamageForRenderPass(int damage, int pass) {
-        return pass == 0 ? itemIcon : colorOverlay;
+        return pass == 0 || ((damage >>> 4) & 0b111111) == 0 ? itemIcon : colorOverlay;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public int getColorFromItemStack(ItemStack stack, int renderPass) {
-        if (renderPass != 0) {
+        if (renderPass != 0 && getInkFromDamage(stack) != 0) {
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
             return getColorCode(color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
         } else {
@@ -86,7 +102,7 @@ public class PaintbrushItem extends Item {
         if (!world.isRemote) {
             PaintbrushData data = PaintbrushData.get(world);
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-            Paint paint = new Paint(color, 0, 0, EnumFacing.values()[face], new BlockPos(x, y, z));
+            Paint paint = new Paint(color, (int) Math.floor(hitX / 0.0625f), (int) Math.floor(hitY / 0.0625f), EnumFacing.values()[face], new BlockPos(x, y, z));
             data.addPaint(paint);
         }
 
@@ -97,7 +113,7 @@ public class PaintbrushItem extends Item {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean advancedTooltips) {
         EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name"));
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + (getInkFromDamage(stack) != 0 ? color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name") : "-"));
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + getSizeFromDamage(stack));
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + getInkFromDamage(stack));
     }
@@ -106,7 +122,7 @@ public class PaintbrushItem extends Item {
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
         for (int i = 0; i < 16; i++) {
-            items.add(new ItemStack(item, 1, getDamage(i, itemRand.nextInt(64) + 1, itemRand.nextInt(5) + 1)));
+            items.add(new ItemStack(item, 1, getDamage(i, itemRand.nextInt(65), itemRand.nextInt(5) + 1)));
         }
     }
 
