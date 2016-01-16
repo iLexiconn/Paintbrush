@@ -40,14 +40,14 @@ public class Paint {
     }
 
     public void writeToNBT(NBTTagCompound compound) {
-        compound.setString("Color", color.getFriendlyName());
+        compound.setInteger("Color", color.ordinal());
         compound.setInteger("X", x);
         compound.setInteger("Y", y);
-        compound.setString("Facing", facing.name());
+        compound.setInteger("Facing", facing.ordinal());
         pos.writeToNBT(compound);
     }
 
     public static Paint readFromNBT(NBTTagCompound compound) {
-        return new Paint(EnumChatFormatting.getValueByName(compound.getString("Color")), compound.getInteger("X"), compound.getInteger("Y"), EnumFacing.valueOf(compound.getString("Facing")), BlockPos.readFromNBT(compound));
+        return new Paint(EnumChatFormatting.values()[compound.getInteger("Color")], compound.getInteger("X"), compound.getInteger("Y"), EnumFacing.values()[compound.getInteger("Facing")], BlockPos.readFromNBT(compound));
     }
 }

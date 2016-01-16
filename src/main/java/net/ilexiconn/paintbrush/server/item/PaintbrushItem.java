@@ -86,7 +86,7 @@ public class PaintbrushItem extends Item {
         if (!world.isRemote) {
             PaintbrushData data = PaintbrushData.get(world);
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-            Paint paint = new Paint(color, itemRand.nextInt(15), itemRand.nextInt(15), EnumFacing.values()[face], new BlockPos(x, y, z));
+            Paint paint = new Paint(color, 0, 0, EnumFacing.values()[face], new BlockPos(x, y, z));
             data.addPaint(paint);
         }
 
@@ -105,8 +105,8 @@ public class PaintbrushItem extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
-        for (int dyeType = 0; dyeType < 16; dyeType++) {
-            items.add(new ItemStack(item, 1, getDamage(dyeType, itemRand.nextInt(64) + 1, itemRand.nextInt(5) + 1)));
+        for (int i = 0; i < 16; i++) {
+            items.add(new ItemStack(item, 1, getDamage(i, itemRand.nextInt(64) + 1, itemRand.nextInt(5) + 1)));
         }
     }
 

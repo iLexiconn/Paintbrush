@@ -1,6 +1,8 @@
 package net.ilexiconn.paintbrush.server.world;
 
 import com.google.common.collect.Lists;
+import net.ilexiconn.paintbrush.Paintbrush;
+import net.ilexiconn.paintbrush.server.message.MessageUpdatePaint;
 import net.ilexiconn.paintbrush.server.util.BlockPos;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.nbt.NBTTagCompound;
@@ -69,7 +71,12 @@ public class PaintbrushData extends WorldSavedData {
         }
 
         paintList.add(paint);
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdatePaint(paint));
         markDirty();
+    }
+
+    public void removePaint(Paint paint) {
+        paintList.remove(paint);
     }
 
     public Paint[] getPaint() {
