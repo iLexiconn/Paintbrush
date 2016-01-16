@@ -28,15 +28,16 @@ public class PaintbrushItem extends Item {
         setUnlocalizedName("paintbrush");
         setCreativeTab(CreativeTabs.tabTools);
         setTextureName("paintbrush:paintbrush");
+        setMaxDamage(64);
+        setMaxStackSize(1);
     }
 
     public int getColorFromDamage(ItemStack stack) {
         return stack.getItemDamage() & 0b1111;
     }
 
-    @SuppressWarnings("deprecation")
     public int getInkFromDamage(ItemStack stack) {
-        return (stack.getItem().getDisplayDamage(stack) >>> 4) & 0b111111;
+        return (stack.getItemDamage() >>> 4) & 0b111111;
     }
 
     public int getSizeFromDamage(ItemStack stack) {
@@ -55,19 +56,15 @@ public class PaintbrushItem extends Item {
         stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public int getMaxDamage() {
-        return 64;
-    }
-
-    @Override
-    public int getDamage(ItemStack stack) {
+    public int getDisplayDamage(ItemStack stack) {
         return getInkFromDamage(stack);
     }
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        return true;
+        return stack.isItemDamaged();
     }
 
     @SideOnly(Side.CLIENT)
@@ -83,13 +80,13 @@ public class PaintbrushItem extends Item {
 
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamageForRenderPass(int damage, int pass) {
-        return pass == 0 || ((damage >>> 4) & 0b111111) == 0 ? itemIcon : colorOverlay;
+        return pass == 0 || damage == getMaxDamage() ? itemIcon : colorOverlay;
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
+    @SideOnly(Side.CLIENT)
     public int getColorFromItemStack(ItemStack stack, int renderPass) {
-        if (renderPass != 0 && getInkFromDamage(stack) != 0) {
+        if (renderPass != 0 && getInkFromDamage(stack) != getMaxDamage()) {
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
             return getColorCode(color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
         } else {
@@ -113,9 +110,9 @@ public class PaintbrushItem extends Item {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean advancedTooltips) {
         EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + (getInkFromDamage(stack) != 0 ? color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name") : "-"));
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + (getInkFromDamage(stack) != getMaxDamage() ? color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name") : "-"));
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + getSizeFromDamage(stack));
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + getInkFromDamage(stack));
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + (getMaxDamage() - getInkFromDamage(stack)));
     }
 
     @Override
