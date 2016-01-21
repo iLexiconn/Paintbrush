@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PaintbrushData extends WorldSavedData {
     private List<Paint> paintList = Lists.newArrayList();
-    public static PaintbrushData instance;
+    private static PaintbrushData instance;
 
     public PaintbrushData() {
         super("paintbrush");
@@ -75,34 +75,29 @@ public class PaintbrushData extends WorldSavedData {
         markDirty();
     }
 
-    public void removePaint(Paint paint) {
-        paintList.remove(paint);
-    }
-
-    public Paint[] getPaint() {
-        return paintList.toArray(new Paint[paintList.size()]);
+    public List<Paint> getPaint() {
+        return paintList;
     }
 
     public static PaintbrushData get(World world) {
-        if (PaintbrushData.instance == null) {
+        if (instance == null) {
             if (!world.isRemote) {
                 MapStorage storage = world.perWorldStorage;
-
                 PaintbrushData result = (PaintbrushData) storage.loadData(PaintbrushData.class, "paintbrush");
                 if (result == null) {
                     result = new PaintbrushData("paintbrush");
                     result.markDirty();
                     storage.setData("paintbrush", result);
                 }
-
-                PaintbrushData.instance = result;
-
+                instance = result;
                 return result;
             }
-
             return null;
         }
+        return instance;
+    }
 
-        return PaintbrushData.instance;
+    public static void reset() {
+        instance = null;
     }
 }

@@ -8,6 +8,7 @@ import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.util.BlockPos;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -41,15 +42,19 @@ public class ClientEventHandler {
         tessellator.startDrawingQuads();
         for (Paint paint : paintList) {
             BlockPos pos = paint.getPos();
-            double x = pos.getX();
-            double y = pos.getY();
+            int hex = getColorCode(paint.getColor().getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
+            int r = (hex & 0xFF0000) >> 16;
+            int g = (hex & 0xFF00) >> 8;
+            int b = (hex & 0xFF);
+            double x = pos.getX() + paint.getX() * 0.0625F;
+            double y = pos.getY() + paint.getY() * 0.0625F;
             double z = pos.getZ();
 
-            tessellator.setColorRGBA_F(1, 1, 1, 1);
-            tessellator.addVertex(x, y, z);
-            tessellator.addVertex(x + 1, y, z);
-            tessellator.addVertex(x + 1, y + 1, z);
-            tessellator.addVertex(x, y + 1, z);
+            tessellator.setColorRGBA(r, g, b, 255);
+            tessellator.addVertex(x, y, z - 0.01F);
+            tessellator.addVertex(x + 0.0625F, y, z - 0.01F);
+            tessellator.addVertex(x + 0.0625F, y + 0.0625F, z - 0.01F);
+            tessellator.addVertex(x, y + 0.0625F, z - 0.01F);
         }
         tessellator.draw();
         glPopMatrix();
@@ -79,8 +84,7 @@ public class ClientEventHandler {
                     } else if (event.dwheel < 0 && size > 1) {
                         size += event.dwheel / 120;
                     }
-                    paintbrush.setDamage(stack, paintbrush.getDamage(paintbrush.getColorFromDamage(stack),
-                            paintbrush.getInkFromDamage(stack), size));
+                    paintbrush.setDamage(stack, paintbrush.getDamage(paintbrush.getColorFromDamage(stack), paintbrush.getInkFromDamage(stack), size, paintbrush.isStackInfinite(stack)));
                     event.setCanceled(true);
                 }
             }
@@ -104,8 +108,7 @@ public class ClientEventHandler {
                     glBegin(GL_LINE_LOOP);
                     for (int i = 0; i < 360; i++) {
                         double degInRad = Math.toRadians(i);
-                        glVertex2d(Math.cos(degInRad) * paintbrush.getSizeFromDamage(stack),
-                                Math.sin(degInRad) * paintbrush.getSizeFromDamage(stack));
+                        glVertex2d(Math.cos(degInRad) * paintbrush.getSizeFromDamage(stack), Math.sin(degInRad) * paintbrush.getSizeFromDamage(stack));
                     }
                     glEnd();
                     glEnable(GL_TEXTURE_2D);
@@ -114,5 +117,9 @@ public class ClientEventHandler {
                 }
             }
         }
+    }
+
+    public int getColorCode(char character, FontRenderer fontRenderer) {
+        return fontRenderer.colorCode["0123456789abcdef".indexOf(character)];
     }
 }

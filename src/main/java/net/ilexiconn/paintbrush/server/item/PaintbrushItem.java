@@ -44,8 +44,12 @@ public class PaintbrushItem extends Item {
         return (stack.getItemDamage() >>> 10) & 0b111;
     }
 
-    public int getDamage(int color, int ink, int size) {
-        return (color & 0b1111) | (ink << 4) | (size << 10);
+    public boolean isStackInfinite(ItemStack stack) {
+        return ((stack.getItemDamage() >>> 13) & 0b1) == 1;
+    }
+
+    public int getDamage(int color, int ink, int size, boolean infinite) {
+        return (color & 0b1111) | (ink << 4) | (size << 10) | (infinite ? 1 << 13 : 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -56,7 +60,7 @@ public class PaintbrushItem extends Item {
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        return true;
+        return !isStackInfinite(stack);
     }
 
     @SideOnly(Side.CLIENT)
@@ -104,14 +108,14 @@ public class PaintbrushItem extends Item {
         EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + (getInkFromDamage(stack) != getMaxDamage() ? color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name") : "-"));
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + getSizeFromDamage(stack));
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + (getMaxDamage() - getInkFromDamage(stack)));
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + (isStackInfinite(stack) ? "∞" : (getMaxDamage() - getInkFromDamage(stack))));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
         for (int i = 0; i < 16; i++) {
-            items.add(new ItemStack(item, 1, getDamage(i, 0, 1)));
+            items.add(new ItemStack(item, 1, getDamage(i, 0, 1, true)));
         }
     }
 

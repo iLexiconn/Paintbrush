@@ -6,7 +6,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class ServerProxy {
     public void init() {
-        CommonEventHandler eventHandler = new CommonEventHandler();
+        ServerEventHandler eventHandler = new ServerEventHandler();
         MinecraftForge.EVENT_BUS.register(eventHandler);
         FMLCommonHandler.instance().bus().register(eventHandler);
     }
