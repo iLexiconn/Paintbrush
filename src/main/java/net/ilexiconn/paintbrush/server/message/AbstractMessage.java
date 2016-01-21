@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 /**
  * TAKEN FROM LLIBRARY https://github.com/iLexiconn/LLibrary/
- *
+ * <p/>
  * {@link IMessage} and {@link IMessageHandler} implemented in the same class.
  *
  * @param <M> The message to receive data from. This should be the same class. Make sure to use this, otherwise you can't access your variables in the message!
