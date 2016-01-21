@@ -1,53 +1,48 @@
 package net.ilexiconn.paintbrush.server.util;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
 
-public class Paint {
-    private final EnumChatFormatting color;
-    private final int x;
-    private final int y;
-    private final EnumFacing facing;
-    private final BlockPos pos;
+public class Paint implements Util<PaintedFace> {
+    public EnumChatFormatting color;
+    public int x;
+    public int y;
 
-    public Paint(EnumChatFormatting color, int x, int y, EnumFacing facing, BlockPos pos) {
-        this.color = color;
-        this.x = x;
-        this.y = y;
-        this.facing = facing;
-        this.pos = pos;
-    }
-
-    public EnumChatFormatting getColor() {
-        return color;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public EnumFacing getFacing() {
-        return facing;
-    }
-
-    public BlockPos getPos() {
-        return pos;
-    }
-
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
-        compound.setInteger("Color", color.ordinal());
-        compound.setInteger("X", x);
-        compound.setInteger("Y", y);
-        compound.setInteger("Facing", facing.ordinal());
-        pos.writeToNBT(compound);
+        compound.setInteger("color", color.ordinal());
+        compound.setInteger("x", x);
+        compound.setInteger("y", y);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void render(Minecraft mc, PaintedFace paintedFace, double x, double y, double z) {
+
+    }
+
+    @Override
+    public void encode(ByteBuf buf) {
+        buf.writeByte((color.ordinal() & 0B1111) | ((x & 0B1111) << 4) | ((y & 0B1111) << 10));
+    }
+
+    @Override
+    public void decode(ByteBuf buf) {
+        byte data = buf.readByte();
+        color = EnumChatFormatting.values()[data & 0B1111];
+        x = data >>> 4 & 0B1111;
+        y = data >>> 8 & 0B1111;
     }
 
     public static Paint readFromNBT(NBTTagCompound compound) {
-        return new Paint(EnumChatFormatting.values()[compound.getInteger("Color")], compound.getInteger("X"), compound.getInteger("Y"), EnumFacing.values()[compound.getInteger("Facing")], BlockPos.readFromNBT(compound));
+        Paint paint = new Paint();
+        paint.color = EnumChatFormatting.values()[compound.getInteger("color")];
+        paint.x = compound.getInteger("x");
+        paint.y = compound.getInteger("y");
+        return paint;
     }
 }

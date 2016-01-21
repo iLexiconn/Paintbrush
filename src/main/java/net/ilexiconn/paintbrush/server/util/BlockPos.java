@@ -1,11 +1,19 @@
 package net.ilexiconn.paintbrush.server.util;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class BlockPos {
-    private final int x;
-    private final int y;
-    private final int z;
+public class BlockPos implements Util {
+    public int x;
+    public int y;
+    public int z;
+
+    public BlockPos() {
+
+    }
 
     public BlockPos(int x, int y, int z) {
         this.x = x;
@@ -13,29 +21,35 @@ public class BlockPos {
         this.z = z;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
-    }
-
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
-        NBTTagCompound pos = new NBTTagCompound();
-        pos.setInteger("X", x);
-        pos.setInteger("Y", y);
-        pos.setInteger("Z", z);
-        compound.setTag("Pos", pos);
+        compound.setInteger("x", x);
+        compound.setInteger("y", y);
+        compound.setInteger("z", z);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void render(Minecraft mc, Util paint, double x, double y, double z) {
+
+    }
+
+    @Override
+    public void encode(ByteBuf buf) {
+        buf.writeInt(x);
+        buf.writeInt(y);
+        buf.writeInt(z);
+    }
+
+    @Override
+    public void decode(ByteBuf buf) {
+        x = buf.readInt();
+        y = buf.readInt();
+        z = buf.readInt();
     }
 
     public static BlockPos readFromNBT(NBTTagCompound compound) {
-        NBTTagCompound pos = compound.getCompoundTag("Pos");
-        return new BlockPos(pos.getInteger("X"), pos.getInteger("Y"), pos.getInteger("Z"));
+        return new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
     }
 
     @Override

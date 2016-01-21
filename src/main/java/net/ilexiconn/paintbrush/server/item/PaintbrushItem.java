@@ -2,8 +2,6 @@ package net.ilexiconn.paintbrush.server.item;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.ilexiconn.paintbrush.server.util.BlockPos;
-import net.ilexiconn.paintbrush.server.util.Paint;
 import net.ilexiconn.paintbrush.server.world.PaintbrushData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -13,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -95,8 +92,8 @@ public class PaintbrushItem extends Item {
         if (!world.isRemote) {
             PaintbrushData data = PaintbrushData.get(world);
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-            Paint paint = new Paint(color, (int) Math.floor(hitX / 0.0625f), (int) Math.floor(hitY / 0.0625f), EnumFacing.values()[face], new BlockPos(x, y, z));
-            data.addPaint(paint);
+            /*Paint paint = new Paint(color, (int) Math.floor(hitX / 0.0625f), (int) Math.floor(hitY / 0.0625f), EnumFacing.values()[face], new BlockPos(x, y, z));
+            data.addPaint(paint);*/
         }
 
         return false;
