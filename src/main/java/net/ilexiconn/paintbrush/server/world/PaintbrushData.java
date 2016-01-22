@@ -53,19 +53,26 @@ public class PaintbrushData extends WorldSavedData {
     }
 
     public Paint getPaint(BlockPos pos, EnumFacing facing, int x, int y) {
-        for (PaintedBlock paintedBlock : paintedBlocks) {
-            if (paintedBlock.pos == pos) {
-                for (PaintedFace paintedFace : paintedBlock.paintedFaces) {
-                    if (paintedFace.facing == facing) {
-                        for (Paint paint : paintedFace.paint) {
-                            if (paint.x == x && paint.y == y) {
-                                return paint;
-                            }
-                        }
-                    }
-                }
+        PaintedBlock paintedBlock = getPaintedBlock(pos);
+
+        if (paintedBlock != null) {
+            PaintedFace paintedFace = paintedBlock.getPaintedFace(facing);
+
+            if (paintedFace != null) {
+                return paintedFace.getPaint(x, y);
             }
         }
+
+        return null;
+    }
+
+    public PaintedBlock getPaintedBlock(BlockPos pos) {
+        for (PaintedBlock paintedBlock : paintedBlocks) {
+            if (pos.equals(paintedBlock.pos)) {
+                return paintedBlock;
+            }
+        }
+
         return null;
     }
 

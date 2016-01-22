@@ -11,11 +11,18 @@ import net.minecraftforge.common.util.Constants;
 
 public class PaintedBlock implements Util {
     public BlockPos pos;
-    public PaintedFace[] paintedFaces;
+    public PaintedFace[] paintedFaces = new PaintedFace[6];
+
+    public PaintedBlock() {
+        for (int i = 0; i < 6; i++) {
+            paintedFaces[i] = new PaintedFace();
+            paintedFaces[i].facing = EnumFacing.values()[i];
+        }
+    }
 
     public PaintedFace getPaintedFace(EnumFacing facing) {
         for (PaintedFace paintedFace : paintedFaces) {
-            if (paintedFace.facing == facing) {
+            if (facing.equals(paintedFace.facing)) {
                 return paintedFace;
             }
         }

@@ -6,12 +6,13 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 
 public class PaintedFace implements Util<PaintedBlock> {
     public EnumFacing facing;
-    public Paint[] paint;
+    public Paint[] paint = new Paint[256];
 
     public Paint getPaint(int x, int y) {
         for (Paint paint : this.paint) {
@@ -20,6 +21,15 @@ public class PaintedFace implements Util<PaintedBlock> {
             }
         }
         return null;
+    }
+
+    public void paint(int x, int y, EnumChatFormatting color) {
+        int index = (y * 16) + x;
+        Paint paint = new Paint();
+        paint.color = color;
+        paint.x = x;
+        paint.y = y;
+        this.paint[index] = paint;
     }
 
     @Override
@@ -52,7 +62,7 @@ public class PaintedFace implements Util<PaintedBlock> {
         buf.writeByte(facing.ordinal());
         buf.writeByte(paint.length);
         for (Paint paint : this.paint) {
-            if (this.paint != null) {
+            if (paint != null) {
                 paint.encode(buf);
             }
         }

@@ -59,7 +59,9 @@ public class ClientEventHandler {
         tessellator.draw();*/
 
         for (PaintedBlock paintedBlock : paintedBlocks) {
-            paintedBlock.render(mc, null, dX, dY, dZ);
+            if (paintedBlock != null) {
+                paintedBlock.render(mc, null, dX, dY, dZ);
+            }
         }
 
         glPopMatrix();
