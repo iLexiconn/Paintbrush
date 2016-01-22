@@ -18,4 +18,7 @@ public interface Util<SELF extends Util> {
     void encode(ByteBuf buf);
 
     SELF decode(ByteBuf buf);
+
+    @SideOnly(Side.CLIENT)
+    void updateClient(Minecraft mc);
 }

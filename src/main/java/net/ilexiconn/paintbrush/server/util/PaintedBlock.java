@@ -4,18 +4,20 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.ilexiconn.paintbrush.client.PaintbrushDataClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 
 public class PaintedBlock implements Util<PaintedBlock> {
     public BlockPos pos;
-    private List<PaintedFace> paintedFaceList = Lists.newArrayList();
+    public List<PaintedFace> paintedFaceList = Lists.newArrayList();
 
     public PaintedFace getPaintedFace(EnumFacing facing) {
         for (PaintedFace paintedFace : paintedFaceList) {
@@ -24,10 +26,6 @@ public class PaintedBlock implements Util<PaintedBlock> {
             }
         }
         return null;
-    }
-
-    public void addPaintedFace(PaintedFace paintedFace) {
-        paintedFaceList.add(paintedFace);
     }
 
     @Override
@@ -83,5 +81,20 @@ public class PaintedBlock implements Util<PaintedBlock> {
             paintedFaceList.add(new PaintedFace().decode(buf));
         }
         return this;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void updateClient(Minecraft mc) {
+        MovingObjectPosition object = mc.objectMouseOver;
+        if (object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            int x = object.blockX;
+            int y = object.blockY;
+            int z = object.blockZ;
+            BlockPos pos = new BlockPos(x, y, z);
+            PaintedBlock paintedBlock = new PaintedBlock();
+            paintedBlock.pos = pos;
+            PaintbrushDataClient.addPaintedBlock(paintedBlock);
+        }
     }
 }

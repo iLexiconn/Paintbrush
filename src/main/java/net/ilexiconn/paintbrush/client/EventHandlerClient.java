@@ -5,7 +5,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
-import net.ilexiconn.paintbrush.server.world.PaintbrushData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,7 +17,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import static org.lwjgl.opengl.GL11.*;
 
 @SideOnly(Side.CLIENT)
-public class ClientEventHandler {
+public class EventHandlerClient {
     public Minecraft mc = Minecraft.getMinecraft();
 
     @SubscribeEvent
@@ -33,14 +32,8 @@ public class ClientEventHandler {
         glColor4f(1, 1, 1, 1);
         glPushMatrix();
 
-        PaintbrushData data = PaintbrushData.get(mc.theWorld);
-
-        if (data != null) {
-            for (PaintedBlock paintedBlock : data.getPaintedBlocks()) {
-                if (paintedBlock != null) {
-                    paintedBlock.render(mc, Tessellator.instance, dX, dY, dZ);
-                }
-            }
+        for (PaintedBlock paintedBlock : PaintbrushDataClient.getPaintedBlocks()) {
+            paintedBlock.render(mc, Tessellator.instance, dX, dY, dZ);
         }
 
         glPopMatrix();

@@ -4,9 +4,9 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
-public class ServerProxy {
+public class ProxyServer {
     public void init() {
-        ServerEventHandler eventHandler = new ServerEventHandler();
+        EventHandlerServer eventHandler = new EventHandlerServer();
         MinecraftForge.EVENT_BUS.register(eventHandler);
         FMLCommonHandler.instance().bus().register(eventHandler);
     }

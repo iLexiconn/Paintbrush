@@ -1,4 +1,4 @@
-package net.ilexiconn.paintbrush.server.world;
+package net.ilexiconn.paintbrush.server;
 
 import com.google.common.collect.Lists;
 import net.ilexiconn.paintbrush.Paintbrush;
@@ -6,6 +6,7 @@ import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
 import net.ilexiconn.paintbrush.server.util.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
@@ -14,15 +15,15 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 
-public class PaintbrushData extends WorldSavedData {
+public class PaintbrushDataServer extends WorldSavedData {
     private List<PaintedBlock> paintedBlocks = Lists.newArrayList();
-    private static PaintbrushData instance;
+    private static PaintbrushDataServer instance;
 
-    public PaintbrushData() {
+    public PaintbrushDataServer() {
         super("paintbrush");
     }
 
-    public PaintbrushData(String identifier) {
+    public PaintbrushDataServer(String identifier) {
         super(identifier);
     }
 
@@ -79,17 +80,33 @@ public class PaintbrushData extends WorldSavedData {
         markDirty();
     }
 
+    public void addPaintedFace(PaintedBlock paintedBlock, PaintedFace paintedFace) {
+        paintedBlock.paintedFaceList.add(paintedFace);
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.FACE, paintedFace));
+        markDirty();
+    }
+
+    public void addPaint(PaintedFace paintedFace, int x, int y, EnumChatFormatting color) {
+        Paint paint = new Paint();
+        paint.color = color;
+        paint.x = x;
+        paint.y = y;
+        paintedFace.paintList.add(paint);
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.PAINT, paint));
+        markDirty();
+    }
+
     public List<PaintedBlock> getPaintedBlocks() {
         return paintedBlocks;
     }
 
-    public static PaintbrushData get(World world) {
+    public static PaintbrushDataServer get(World world) {
         if (instance == null) {
             if (!world.isRemote) {
                 MapStorage storage = world.perWorldStorage;
-                PaintbrushData result = (PaintbrushData) storage.loadData(PaintbrushData.class, "paintbrush");
+                PaintbrushDataServer result = (PaintbrushDataServer) storage.loadData(PaintbrushDataServer.class, "paintbrush");
                 if (result == null) {
-                    result = new PaintbrushData("paintbrush");
+                    result = new PaintbrushDataServer("paintbrush");
                     result.markDirty();
                     storage.setData("paintbrush", result);
                 }

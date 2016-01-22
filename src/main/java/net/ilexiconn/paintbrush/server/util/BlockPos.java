@@ -61,6 +61,12 @@ public class BlockPos implements Util<BlockPos> {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public void updateClient(Minecraft mc) {
+
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof BlockPos) {
             BlockPos pos = (BlockPos) o;

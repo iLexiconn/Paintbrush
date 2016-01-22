@@ -5,7 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.util.BlockPos;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.ilexiconn.paintbrush.server.util.PaintedFace;
-import net.ilexiconn.paintbrush.server.world.PaintbrushData;
+import net.ilexiconn.paintbrush.server.PaintbrushDataServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -94,7 +94,7 @@ public class PaintbrushItem extends Item {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
-            PaintbrushData data = PaintbrushData.get(world);
+            PaintbrushDataServer data = PaintbrushDataServer.get(world);
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
 
             int resolution = 16;
@@ -133,10 +133,10 @@ public class PaintbrushItem extends Item {
             if (paintedFace == null) {
                 paintedFace = new PaintedFace();
                 paintedFace.facing = facing;
-                paintedBlock.addPaintedFace(paintedFace);
+                data.addPaintedFace(paintedBlock, paintedFace);
             }
 
-            paintedFace.addPaint(drawX, drawY, color);
+            data.addPaint(paintedFace, drawX, drawY, color);
         }
 
         return false;

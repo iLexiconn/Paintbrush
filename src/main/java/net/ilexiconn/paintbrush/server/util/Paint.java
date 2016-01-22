@@ -3,12 +3,14 @@ package net.ilexiconn.paintbrush.server.util;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.ilexiconn.paintbrush.client.PaintbrushDataClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import org.lwjgl.opengl.GL11;
 
 public class Paint implements Util<Paint> {
@@ -68,6 +70,20 @@ public class Paint implements Util<Paint> {
         y = data >>> 8 & 0B1111;
         System.out.println("Decoding " + data + " to c:" + color.ordinal() + ",x:" + x + ",y:" + y);
         return this;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void updateClient(Minecraft mc) {
+        MovingObjectPosition object = mc.objectMouseOver;
+        if (object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            int x = object.blockX;
+            int y = object.blockY;
+            int z = object.blockZ;
+            BlockPos pos = new BlockPos(x, y, z);
+            EnumFacing facing = EnumFacing.values()[object.sideHit];
+            PaintbrushDataClient.addPaint(PaintbrushDataClient.getPaintedBlock(pos).getPaintedFace(facing), x, y, color);
+        }
     }
 
     @SideOnly(Side.CLIENT)

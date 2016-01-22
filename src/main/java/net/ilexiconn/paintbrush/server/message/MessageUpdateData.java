@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.server.util.Util;
 import net.ilexiconn.paintbrush.server.util.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
@@ -23,7 +24,9 @@ public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
     @Override
     @SideOnly(Side.CLIENT)
     public void handleClientMessage(MessageUpdateData message, EntityPlayer player) {
-        System.out.println("Received " + message.util);
+        if (message.util != null) {
+            message.util.updateClient(Minecraft.getMinecraft());
+        }
     }
 
     @Override
