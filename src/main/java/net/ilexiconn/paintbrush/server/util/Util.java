@@ -8,7 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public interface Util<PARENT extends Util, SELF extends Util> {
     @SideOnly(Side.CLIENT)
-    void render(Minecraft mc, PARENT PARENT, double x, double y, double z);
+    void render(Minecraft mc, PARENT parent, double x, double y, double z);
 
     void writeToNBT(NBTTagCompound compound);
 
