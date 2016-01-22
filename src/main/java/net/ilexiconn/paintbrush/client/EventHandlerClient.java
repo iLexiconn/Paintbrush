@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -62,6 +63,13 @@ public class EventHandlerClient {
                     event.setCanceled(true);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldLoad(WorldEvent.Load event) {
+        if (event.world.isRemote) {
+            PaintbrushDataClient.getPaintedBlocks().clear();
         }
     }
 }
