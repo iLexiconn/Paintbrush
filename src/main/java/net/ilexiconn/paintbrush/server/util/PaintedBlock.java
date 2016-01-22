@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 
-public class PaintedBlock implements Util {
+public class PaintedBlock implements Util<Util, PaintedBlock> {
     public BlockPos pos;
     public PaintedFace[] paintedFaces = new PaintedFace[6];
 
@@ -30,6 +30,16 @@ public class PaintedBlock implements Util {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public void render(Minecraft mc, Util paint, double x, double y, double z) {
+        for (PaintedFace paintedFace : paintedFaces) {
+            if (paintedFace != null) {
+                paintedFace.render(mc, this, x, y, z);
+            }
+        }
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
         pos.writeToNBT(compound);
         compound.setInteger("faceCount", paintedFaces.length);
@@ -45,19 +55,24 @@ public class PaintedBlock implements Util {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void render(Minecraft mc, Util paint, double x, double y, double z) {
-        for (PaintedFace paintedFace : paintedFaces) {
-            if (paintedFace != null) {
-                paintedFace.render(mc, this, x, y, z);
+    public PaintedBlock readFromNBT(NBTTagCompound compound) {
+        pos = new BlockPos().readFromNBT(compound);
+        paintedFaces = new PaintedFace[compound.getInteger("faceCount")];
+        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
+        for (int i = 0; i < paintedFaces.length; i++) {
+            NBTTagCompound faceCompound = list.getCompoundTagAt(i);
+            if (!faceCompound.hasNoTags()) {
+                paintedFaces[i] = new PaintedFace().readFromNBT(faceCompound);
             }
         }
+        return this;
     }
 
     @Override
     public void encode(ByteBuf buf) {
         pos.encode(buf);
         buf.writeByte(paintedFaces.length);
+        System.out.println("Encoding c:" + paintedFaces.length);
         for (PaintedFace paintedFace : paintedFaces) {
             if (paintedFace != null) {
                 paintedFace.encode(buf);
@@ -66,28 +81,14 @@ public class PaintedBlock implements Util {
     }
 
     @Override
-    public void decode(ByteBuf buf) {
+    public PaintedBlock decode(ByteBuf buf) {
         pos = new BlockPos();
         pos.decode(buf);
         paintedFaces = new PaintedFace[buf.readByte()];
+        System.out.println("Decoding c:" + paintedFaces.length);
         for (int i = 0; i < paintedFaces.length; i++) {
-            PaintedFace paintedFace = new PaintedFace();
-            paintedFace.decode(buf);
-            paintedFaces[i] = paintedFace;
+            paintedFaces[i] = new PaintedFace().decode(buf);
         }
-    }
-
-    public static PaintedBlock readFromNBT(NBTTagCompound compound) {
-        PaintedBlock paintedBlock = new PaintedBlock();
-        paintedBlock.pos = BlockPos.readFromNBT(compound);
-        paintedBlock.paintedFaces = new PaintedFace[compound.getInteger("faceCount")];
-        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
-        for (int i = 0; i < paintedBlock.paintedFaces.length; i++) {
-            NBTTagCompound faceCompound = list.getCompoundTagAt(i);
-            if (!faceCompound.hasNoTags()) {
-                paintedBlock.paintedFaces[i] = PaintedFace.readFromNBT(faceCompound);
-            }
-        }
-        return paintedBlock;
+        return this;
     }
 }

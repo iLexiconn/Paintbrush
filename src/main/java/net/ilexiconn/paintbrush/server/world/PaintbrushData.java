@@ -35,7 +35,7 @@ public class PaintbrushData extends WorldSavedData {
 
         for (int i = 0; i < paint.tagCount(); i++) {
             NBTTagCompound paintTag = paint.getCompoundTagAt(i);
-            paintedBlocks.add(PaintedBlock.readFromNBT(paintTag));
+            paintedBlocks.add(new PaintedBlock().readFromNBT(paintTag));
         }
     }
 

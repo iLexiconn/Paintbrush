@@ -3,7 +3,6 @@ package net.ilexiconn.paintbrush.server.message;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import net.ilexiconn.paintbrush.client.ClientEventHandler;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -22,8 +21,7 @@ public class MessageUpdatePaint extends AbstractMessage<MessageUpdatePaint> {
     @SideOnly(Side.CLIENT)
     public void handleClientMessage(MessageUpdatePaint message, EntityPlayer player) {
         if (message.paintedBlock != null) {
-            ClientEventHandler.paintedBlocks.add(message.paintedBlock);
-            System.out.println("Receive");
+            System.out.println("Received " + message.paintedBlock);
         }
     }
 

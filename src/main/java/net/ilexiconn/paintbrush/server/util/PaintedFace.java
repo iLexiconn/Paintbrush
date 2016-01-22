@@ -10,7 +10,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 
-public class PaintedFace implements Util<PaintedBlock> {
+public class PaintedFace implements Util<PaintedBlock, PaintedFace> {
     public EnumFacing facing;
     public Paint[] paint = new Paint[256];
 
@@ -33,6 +33,16 @@ public class PaintedFace implements Util<PaintedBlock> {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public void render(Minecraft mc, PaintedBlock paintedBlock, double x, double y, double z) {
+        for (Paint paint : this.paint) {
+            if (paint != null) {
+                paint.render(mc, this, x, y, z);
+            }
+        }
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setInteger("facing", facing.ordinal());
         compound.setInteger("paintCount", paint.length);
@@ -48,17 +58,23 @@ public class PaintedFace implements Util<PaintedBlock> {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void render(Minecraft mc, PaintedBlock paintedBlock, double x, double y, double z) {
-        for (Paint paint : this.paint) {
-            if (paint != null) {
-                paint.render(mc, this, x, y, z);
+    public PaintedFace readFromNBT(NBTTagCompound compound) {
+        PaintedFace paintedFace = new PaintedFace();
+        paintedFace.facing = EnumFacing.values()[compound.getInteger("facing")];
+        paintedFace.paint = new Paint[compound.getInteger("paintCount")];
+        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
+        for (int i = 0; i < paintedFace.paint.length; i++) {
+            NBTTagCompound paintCompound = list.getCompoundTagAt(i);
+            if (!paintCompound.hasNoTags()) {
+                paintedFace.paint[i] = new Paint().readFromNBT(list.getCompoundTagAt(i));
             }
         }
+        return paintedFace;
     }
 
     @Override
     public void encode(ByteBuf buf) {
+        System.out.println("Encoding f:" + facing.ordinal() + ",c:" + paint.length);
         buf.writeByte(facing.ordinal());
         buf.writeByte(paint.length);
         for (Paint paint : this.paint) {
@@ -69,27 +85,13 @@ public class PaintedFace implements Util<PaintedBlock> {
     }
 
     @Override
-    public void decode(ByteBuf buf) {
+    public PaintedFace decode(ByteBuf buf) {
         facing = EnumFacing.values()[buf.readByte()];
         paint = new Paint[buf.readByte()];
+        System.out.println("Decoding f:" + facing.ordinal() + ",c:" + paint.length);
         for (int i = 0; i < paint.length; i++) {
-            Paint paint = new Paint();
-            paint.decode(buf);
-            this.paint[i] = paint;
+            this.paint[i] = new Paint().decode(buf);
         }
-    }
-
-    public static PaintedFace readFromNBT(NBTTagCompound compound) {
-        PaintedFace paintedFace = new PaintedFace();
-        paintedFace.facing = EnumFacing.values()[compound.getInteger("facing")];
-        paintedFace.paint = new Paint[compound.getInteger("paintCount")];
-        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
-        for (int i = 0; i < paintedFace.paint.length; i++) {
-            NBTTagCompound paintCompound = list.getCompoundTagAt(i);
-            if (!paintCompound.hasNoTags()) {
-                paintedFace.paint[i] = Paint.readFromNBT(list.getCompoundTagAt(i));
-            }
-        }
-        return paintedFace;
+        return this;
     }
 }

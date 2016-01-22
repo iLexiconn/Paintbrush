@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class BlockPos implements Util {
+public class BlockPos implements Util<Util, BlockPos> {
     public int x;
     public int y;
     public int z;
@@ -22,6 +22,12 @@ public class BlockPos implements Util {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
+    public void render(Minecraft mc, Util paint, double x, double y, double z) {
+
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setInteger("x", x);
         compound.setInteger("y", y);
@@ -29,9 +35,11 @@ public class BlockPos implements Util {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
-    public void render(Minecraft mc, Util paint, double x, double y, double z) {
-
+    public BlockPos readFromNBT(NBTTagCompound compound) {
+        x = compound.getInteger("x");
+        y = compound.getInteger("y");
+        z = compound.getInteger("z");
+        return this;
     }
 
     @Override
@@ -39,17 +47,16 @@ public class BlockPos implements Util {
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);
+        System.out.println("Encoding x:" + x + ",y:" + y + ",z:" + z);
     }
 
     @Override
-    public void decode(ByteBuf buf) {
+    public BlockPos decode(ByteBuf buf) {
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
-    }
-
-    public static BlockPos readFromNBT(NBTTagCompound compound) {
-        return new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
+        System.out.println("Decoding x:" + x + ",y:" + y + ",z:" + z);
+        return this;
     }
 
     @Override

@@ -6,13 +6,15 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 
-public interface Util<I extends Util> {
+public interface Util<PARENT extends Util, SELF extends Util> {
+    @SideOnly(Side.CLIENT)
+    void render(Minecraft mc, PARENT PARENT, double x, double y, double z);
+
     void writeToNBT(NBTTagCompound compound);
 
-    @SideOnly(Side.CLIENT)
-    void render(Minecraft mc, I i, double x, double y, double z);
+    SELF readFromNBT(NBTTagCompound compound);
 
     void encode(ByteBuf buf);
 
-    void decode(ByteBuf buf);
+    SELF decode(ByteBuf buf);
 }

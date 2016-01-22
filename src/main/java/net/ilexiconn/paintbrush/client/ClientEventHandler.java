@@ -1,11 +1,11 @@
 package net.ilexiconn.paintbrush.client;
 
-import com.google.common.collect.Lists;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
+import net.ilexiconn.paintbrush.server.world.PaintbrushData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
@@ -16,14 +16,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
-import java.util.List;
-
 import static org.lwjgl.opengl.GL11.*;
 
 @SideOnly(Side.CLIENT)
 public class ClientEventHandler {
-    public static List<PaintedBlock> paintedBlocks = Lists.newArrayList();
-
     public Minecraft mc = Minecraft.getMinecraft();
 
     @SubscribeEvent
@@ -58,7 +54,9 @@ public class ClientEventHandler {
         }
         tessellator.draw();*/
 
-        for (PaintedBlock paintedBlock : paintedBlocks) {
+        PaintbrushData data = PaintbrushData.get(mc.theWorld);
+
+        for (PaintedBlock paintedBlock : data.getPaintedBlocks()) {
             if (paintedBlock != null) {
                 paintedBlock.render(mc, null, dX, dY, dZ);
             }
