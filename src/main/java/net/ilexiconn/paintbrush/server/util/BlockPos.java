@@ -75,4 +75,9 @@ public class BlockPos implements Util<BlockPos> {
             return false;
         }
     }
+
+    @Override
+    public String toString() {
+        return "pos(" + x + "," + y + "," + z + ")";
+    }
 }

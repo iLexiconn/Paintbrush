@@ -29,9 +29,10 @@ public class Paint implements Util<Paint> {
         int r = (hex & 0xFF0000) >> 16;
         int g = (hex & 0xFF00) >> 8;
         int b = (hex & 0xFF);
-        double px = pos.x + x * 0.0625F;
-        double py = pos.y + y * 0.0625F;
+        double px = pos.x + this.x * 0.0625F;
+        double py = pos.y + this.y * 0.0625F;
         double pz = pos.z;
+        System.out.println("Rendering: " + pos + ", face(" + facing + "), offset(" + px + ":" + py + "), color(" + color.name() + ")");
 
         tessellator.setColorRGBA(r, g, b, 255);
         tessellator.addVertex(px, py, pz - 0.01F);
