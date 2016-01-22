@@ -3,7 +3,6 @@ package net.ilexiconn.paintbrush.server.item;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.util.BlockPos;
-import net.ilexiconn.paintbrush.server.util.Paint;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.ilexiconn.paintbrush.server.util.PaintedFace;
 import net.ilexiconn.paintbrush.server.world.PaintbrushData;
@@ -126,12 +125,18 @@ public class PaintbrushItem extends Item {
             if (paintedBlock == null) {
                 paintedBlock = new PaintedBlock();
                 paintedBlock.pos = pos;
-                data.addPaint(paintedBlock);
+                data.addPaintedBlock(paintedBlock);
             }
 
             PaintedFace paintedFace = paintedBlock.getPaintedFace(facing);
 
-            paintedFace.paint(drawX, drawY, color);
+            if (paintedFace == null) {
+                paintedFace = new PaintedFace();
+                paintedFace.facing = facing;
+                paintedBlock.addPaintedFace(paintedFace);
+            }
+
+            paintedFace.addPaint(drawX, drawY, color);
         }
 
         return false;

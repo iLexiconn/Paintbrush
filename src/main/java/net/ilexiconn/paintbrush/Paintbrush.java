@@ -9,7 +9,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.ilexiconn.paintbrush.server.ServerProxy;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
-import net.ilexiconn.paintbrush.server.message.MessageUpdatePaint;
+import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
@@ -22,7 +22,7 @@ public class Paintbrush {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
-        networkWrapper.registerMessage(MessageUpdatePaint.class, MessageUpdatePaint.class, 0, Side.CLIENT);
+        networkWrapper.registerMessage(MessageUpdateData.class, MessageUpdateData.class, 0, Side.CLIENT);
 
         GameRegistry.registerItem(new PaintbrushItem(), "paintbrush");
         proxy.init();

@@ -7,7 +7,6 @@ import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.ilexiconn.paintbrush.server.world.PaintbrushData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +23,6 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void onWorldRenderLast(RenderWorldLastEvent event) {
-        Tessellator tessellator = Tessellator.instance;
         EntityLivingBase view = mc.renderViewEntity;
         double dX = view.lastTickPosX + (view.posX - view.lastTickPosX) * (double) event.partialTicks;
         double dY = view.lastTickPosY + (view.posY - view.lastTickPosY) * (double) event.partialTicks;
@@ -34,31 +32,14 @@ public class ClientEventHandler {
 
         glColor4f(1, 1, 1, 1);
         glPushMatrix();
-        /*glTranslated(-dX, -dY, -dZ);
-        tessellator.startDrawingQuads();
-        for (Paint paint : paintList) {
-            BlockPos pos = paint.getPos();
-            int hex = getColorCode(paint.getColor().getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
-            int r = (hex & 0xFF0000) >> 16;
-            int g = (hex & 0xFF00) >> 8;
-            int b = (hex & 0xFF);
-            double x = pos.getX() + paint.getX() * 0.0625F;
-            double y = pos.getY() + paint.getY() * 0.0625F;
-            double z = pos.getZ();
-
-            tessellator.setColorRGBA(r, g, b, 255);
-            tessellator.addVertex(x, y, z - 0.01F);
-            tessellator.addVertex(x + 0.0625F, y, z - 0.01F);
-            tessellator.addVertex(x + 0.0625F, y + 0.0625F, z - 0.01F);
-            tessellator.addVertex(x, y + 0.0625F, z - 0.01F);
-        }
-        tessellator.draw();*/
 
         PaintbrushData data = PaintbrushData.get(mc.theWorld);
 
-        for (PaintedBlock paintedBlock : data.getPaintedBlocks()) {
-            if (paintedBlock != null) {
-                paintedBlock.render(mc, null, dX, dY, dZ);
+        if (data != null) {
+            for (PaintedBlock paintedBlock : data.getPaintedBlocks()) {
+                if (paintedBlock != null) {
+                    paintedBlock.render(mc, Tessellator.instance, dX, dY, dZ);
+                }
             }
         }
 
@@ -89,9 +70,5 @@ public class ClientEventHandler {
                 }
             }
         }
-    }
-
-    public int getColorCode(char character, FontRenderer fontRenderer) {
-        return fontRenderer.colorCode["0123456789abcdef".indexOf(character)];
     }
 }

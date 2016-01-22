@@ -1,21 +1,25 @@
 package net.ilexiconn.paintbrush.server.util;
 
+import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 
-public class PaintedFace implements Util<PaintedBlock, PaintedFace> {
+import java.util.List;
+
+public class PaintedFace implements Util<PaintedFace> {
     public EnumFacing facing;
-    public Paint[] paint = new Paint[256];
+    private List<Paint> paintList = Lists.newArrayList();
 
     public Paint getPaint(int x, int y) {
-        for (Paint paint : this.paint) {
+        for (Paint paint : paintList) {
             if (paint.x == x && paint.y == y) {
                 return paint;
             }
@@ -23,35 +27,30 @@ public class PaintedFace implements Util<PaintedBlock, PaintedFace> {
         return null;
     }
 
-    public void paint(int x, int y, EnumChatFormatting color) {
-        int index = (y * 16) + x;
+    public void addPaint(int x, int y, EnumChatFormatting color) {
         Paint paint = new Paint();
         paint.color = color;
         paint.x = x;
         paint.y = y;
-        this.paint[index] = paint;
+        paintList.add(paint);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void render(Minecraft mc, PaintedBlock paintedBlock, double x, double y, double z) {
-        for (Paint paint : this.paint) {
-            if (paint != null) {
-                paint.render(mc, this, x, y, z);
-            }
+    public void render(Minecraft mc, Tessellator tessellator, double x, double y, double z, Object... data) {
+        for (Paint paint : paintList) {
+            paint.render(mc, tessellator, x, y, z, data[0], facing);
         }
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setInteger("facing", facing.ordinal());
-        compound.setInteger("paintCount", paint.length);
+        compound.setInteger("paintCount", paintList.size());
         NBTTagList list = new NBTTagList();
-        for (Paint paint : this.paint) {
+        for (Paint paint : paintList) {
             NBTTagCompound paintCompound = new NBTTagCompound();
-            if (paint != null) {
-                paint.writeToNBT(paintCompound);
-            }
+            paint.writeToNBT(paintCompound);
             list.appendTag(paintCompound);
         }
         compound.setTag("paint", list);
@@ -59,38 +58,33 @@ public class PaintedFace implements Util<PaintedBlock, PaintedFace> {
 
     @Override
     public PaintedFace readFromNBT(NBTTagCompound compound) {
-        PaintedFace paintedFace = new PaintedFace();
-        paintedFace.facing = EnumFacing.values()[compound.getInteger("facing")];
-        paintedFace.paint = new Paint[compound.getInteger("paintCount")];
+        facing = EnumFacing.values()[compound.getInteger("facing")];
+        paintList = Lists.newArrayList();
         NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
-        for (int i = 0; i < paintedFace.paint.length; i++) {
-            NBTTagCompound paintCompound = list.getCompoundTagAt(i);
-            if (!paintCompound.hasNoTags()) {
-                paintedFace.paint[i] = new Paint().readFromNBT(list.getCompoundTagAt(i));
-            }
+        for (int i = 0; i < compound.getInteger("paintCount"); i++) {
+            paintList.add(new Paint().readFromNBT(list.getCompoundTagAt(i)));
         }
-        return paintedFace;
+        return this;
     }
 
     @Override
     public void encode(ByteBuf buf) {
-        System.out.println("Encoding f:" + facing.ordinal() + ",c:" + paint.length);
+        System.out.println("Encoding f:" + facing.ordinal() + ",c:" + paintList.size());
         buf.writeByte(facing.ordinal());
-        buf.writeByte(paint.length);
-        for (Paint paint : this.paint) {
-            if (paint != null) {
-                paint.encode(buf);
-            }
+        buf.writeByte(paintList.size());
+        for (Paint paint : paintList) {
+            paint.encode(buf);
         }
     }
 
     @Override
     public PaintedFace decode(ByteBuf buf) {
         facing = EnumFacing.values()[buf.readByte()];
-        paint = new Paint[buf.readByte()];
-        System.out.println("Decoding f:" + facing.ordinal() + ",c:" + paint.length);
-        for (int i = 0; i < paint.length; i++) {
-            this.paint[i] = new Paint().decode(buf);
+        paintList = Lists.newArrayList();
+        int size = buf.readByte();
+        System.out.println("Decoding f:" + facing.ordinal() + ",c:" + size);
+        for (int i = 0; i < size; i++) {
+            paintList.add(new Paint().decode(buf));
         }
         return this;
     }

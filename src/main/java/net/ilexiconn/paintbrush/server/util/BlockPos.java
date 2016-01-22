@@ -4,9 +4,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class BlockPos implements Util<Util, BlockPos> {
+public class BlockPos implements Util<BlockPos> {
     public int x;
     public int y;
     public int z;
@@ -23,7 +24,7 @@ public class BlockPos implements Util<Util, BlockPos> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void render(Minecraft mc, Util paint, double x, double y, double z) {
+    public void render(Minecraft mc, Tessellator tessellator, double x, double y, double z, Object... data) {
 
     }
 

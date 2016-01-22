@@ -2,11 +2,8 @@ package net.ilexiconn.paintbrush.server.world;
 
 import com.google.common.collect.Lists;
 import net.ilexiconn.paintbrush.Paintbrush;
-import net.ilexiconn.paintbrush.server.message.MessageUpdatePaint;
-import net.ilexiconn.paintbrush.server.util.BlockPos;
-import net.ilexiconn.paintbrush.server.util.Paint;
-import net.ilexiconn.paintbrush.server.util.PaintedBlock;
-import net.ilexiconn.paintbrush.server.util.PaintedFace;
+import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
+import net.ilexiconn.paintbrush.server.util.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
@@ -76,9 +73,9 @@ public class PaintbrushData extends WorldSavedData {
         return null;
     }
 
-    public void addPaint(PaintedBlock paintedBlock) {
+    public void addPaintedBlock(PaintedBlock paintedBlock) {
         paintedBlocks.add(paintedBlock);
-        Paintbrush.networkWrapper.sendToAll(new MessageUpdatePaint(paintedBlock));
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.BLOCK, paintedBlock));
         markDirty();
     }
 

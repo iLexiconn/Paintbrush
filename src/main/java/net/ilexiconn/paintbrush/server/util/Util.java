@@ -4,11 +4,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 
-public interface Util<PARENT extends Util, SELF extends Util> {
+public interface Util<SELF extends Util> {
     @SideOnly(Side.CLIENT)
-    void render(Minecraft mc, PARENT parent, double x, double y, double z);
+    void render(Minecraft mc, Tessellator tessellator, double x, double y, double z, Object... data);
 
     void writeToNBT(NBTTagCompound compound);
 
