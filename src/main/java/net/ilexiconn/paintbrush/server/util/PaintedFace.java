@@ -72,7 +72,8 @@ public class PaintedFace implements Util<PaintedFace> {
     public PaintedFace decode(ByteBuf buf) {
         facing = EnumFacing.values()[buf.readByte()];
         paintList = Lists.newArrayList();
-        for (int i = 0; i < buf.readByte(); i++) {
+        byte size = buf.readByte();
+        for (int i = 0; i < size; i++) {
             paintList.add(new Paint().decode(buf));
         }
         return this;
