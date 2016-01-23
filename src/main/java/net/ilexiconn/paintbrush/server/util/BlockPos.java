@@ -48,7 +48,6 @@ public class BlockPos implements Util<BlockPos> {
         buf.writeInt(x);
         buf.writeInt(y);
         buf.writeInt(z);
-        System.out.println("Encoding x:" + x + ",y:" + y + ",z:" + z);
     }
 
     @Override
@@ -56,7 +55,6 @@ public class BlockPos implements Util<BlockPos> {
         x = buf.readInt();
         y = buf.readInt();
         z = buf.readInt();
-        System.out.println("Decoding x:" + x + ",y:" + y + ",z:" + z);
         return this;
     }
 

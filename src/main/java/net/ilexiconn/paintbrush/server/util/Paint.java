@@ -30,15 +30,67 @@ public class Paint implements Util<Paint> {
         int r = (hex & 0xFF0000) >> 16;
         int g = (hex & 0xFF00) >> 8;
         int b = (hex & 0xFF);
-        double px = pos.x + this.x * 0.0625F;
-        double py = pos.y + this.y * 0.0625F;
-        double pz = pos.z;
+        double px;
+        double py;
+        double pz;
 
         tessellator.setColorRGBA(r, g, b, 255);
-        tessellator.addVertex(px, py, pz - 0.01F);
-        tessellator.addVertex(px + 0.0625F, py, pz - 0.01F);
-        tessellator.addVertex(px + 0.0625F, py + 0.0625F, pz - 0.01F);
-        tessellator.addVertex(px, py + 0.0625F, pz - 0.01F);
+        switch (facing) {
+            case NORTH:
+                px = pos.x + this.x * 0.0625F;
+                py = pos.y + this.y * 0.0625F;
+                pz = pos.z;
+                tessellator.addVertex(px, py, pz - 0.01F);
+                tessellator.addVertex(px + 0.0625F, py, pz - 0.01F);
+                tessellator.addVertex(px + 0.0625F, py + 0.0625F, pz - 0.01F);
+                tessellator.addVertex(px, py + 0.0625F, pz - 0.01F);
+                break;
+            case EAST:
+                px = pos.x;
+                py = pos.y + this.y * 0.0625F;
+                pz = pos.z + this.x * 0.0625F;
+                tessellator.addVertex(px - 0.01F, py, pz);
+                tessellator.addVertex(px - 0.01F, py + 0.0625F, pz);
+                tessellator.addVertex(px - 0.01F, py + 0.0625F, pz + 0.0625F);
+                tessellator.addVertex(px - 0.01F, py, pz + 0.0625F);
+                break;
+            case SOUTH:
+                px = pos.x + this.x * 0.0625F;
+                py = pos.y + this.y * 0.0625F;
+                pz = pos.z + 1.0F;
+                tessellator.addVertex(px, py, pz + 0.01F);
+                tessellator.addVertex(px + 0.0625F, py, pz + 0.01F);
+                tessellator.addVertex(px + 0.0625F, py + 0.0625F, pz + 0.01F);
+                tessellator.addVertex(px, py + 0.0625F, pz + 0.01F);
+                break;
+            case WEST:
+                px = pos.x + 1.0F;
+                py = pos.y + this.y * 0.0625F;
+                pz = pos.z + this.x * 0.0625F;
+                tessellator.addVertex(px + 0.01F, py, pz);
+                tessellator.addVertex(px + 0.01F, py + 0.0625F, pz);
+                tessellator.addVertex(px + 0.01F, py + 0.0625F, pz + 0.0625F);
+                tessellator.addVertex(px + 0.01F, py, pz + 0.0625F);
+                break;
+            case UP:
+                px = pos.x + this.x * 0.0625F;
+                py = pos.y + 1.0F;
+                pz = pos.z + this.y * 0.0625F;
+                tessellator.addVertex(px, py + 0.01F, pz);
+                tessellator.addVertex(px + 0.0625F, py + 0.01F, pz);
+                tessellator.addVertex(px + 0.0625F, py + 0.01F, pz + 0.0625F);
+                tessellator.addVertex(px, py + 0.01F, pz + 0.0625F);
+                break;
+            case DOWN:
+                px = pos.x + this.x * 0.0625F;
+                py = pos.y;
+                pz = pos.z + this.y * 0.0625F;
+                tessellator.addVertex(px, py - 0.01F, pz);
+                tessellator.addVertex(px + 0.0625F, py - 0.01F, pz);
+                tessellator.addVertex(px + 0.0625F, py - 0.01F, pz + 0.0625F);
+                tessellator.addVertex(px, py - 0.01F, pz + 0.0625F);
+                break;
+        }
         tessellator.draw();
         GL11.glPopMatrix();
     }
