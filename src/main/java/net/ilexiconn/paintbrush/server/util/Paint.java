@@ -61,16 +61,17 @@ public class Paint implements Util<Paint> {
 
     @Override
     public void encode(ByteBuf buf) {
-        System.out.println("Encoding c:" + color.ordinal() + ",x:" + x + ",y:" + y + " to " + ((color.ordinal() & 0B1111) | ((x & 0B1111) << 4) | ((y & 0B1111) << 10)));
-        buf.writeByte((color.ordinal() & 0B1111) | ((x & 0B1111) << 4) | ((y & 0B1111) << 10));
+        int data = ((color.ordinal() & 0B1111) | ((x & 0B1111) << 4) | ((y & 0B1111) << 8));
+        System.out.println("Encoding c:" + color.ordinal() + ",x:" + x + ",y:" + y + " to " + data);
+        buf.writeInt(data);
     }
 
     @Override
     public Paint decode(ByteBuf buf) {
-        byte data = buf.readByte();
+        int data = buf.readInt();
         color = EnumChatFormatting.values()[data & 0B1111];
-        x = data >>> 4 & 0B1111;
-        y = data >>> 8 & 0B1111;
+        x = (data >>> 4) & 0B1111;
+        y = (data >>> 8) & 0B1111;
         System.out.println("Decoding " + data + " to c:" + color.ordinal() + ",x:" + x + ",y:" + y);
         return this;
     }
