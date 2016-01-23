@@ -7,7 +7,6 @@ import net.ilexiconn.paintbrush.server.util.BlockPos;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.ilexiconn.paintbrush.server.util.PaintedFace;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 
 import java.util.List;
@@ -48,11 +47,7 @@ public class PaintbrushDataClient {
         paintedBlock.paintedFaceList.add(paintedFace);
     }
 
-    public static void addPaint(PaintedFace paintedFace, int x, int y, EnumChatFormatting color) {
-        Paint paint = new Paint();
-        paint.color = color;
-        paint.x = x;
-        paint.y = y;
+    public static void addPaint(PaintedFace paintedFace, Paint paint) {
         paintedFace.paintList.add(paint);
     }
 

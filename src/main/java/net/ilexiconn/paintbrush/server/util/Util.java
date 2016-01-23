@@ -20,5 +20,5 @@ public interface Util<SELF extends Util> {
     SELF decode(ByteBuf buf);
 
     @SideOnly(Side.CLIENT)
-    void updateClient(Minecraft mc);
+    void updateClient(Minecraft mc, Object... data);
 }

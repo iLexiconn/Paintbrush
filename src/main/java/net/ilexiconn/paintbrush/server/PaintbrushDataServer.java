@@ -29,8 +29,7 @@ public class PaintbrushDataServer extends WorldSavedData {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        NBTTagList paint = compound.getTagList("paint", Constants.NBT.TAG_LIST);
-
+        NBTTagList paint = compound.getTagList("paint", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < paint.tagCount(); i++) {
             NBTTagCompound paintTag = paint.getCompoundTagAt(i);
             paintedBlocks.add(new PaintedBlock().readFromNBT(paintTag));
@@ -76,13 +75,13 @@ public class PaintbrushDataServer extends WorldSavedData {
 
     public void addPaintedBlock(PaintedBlock paintedBlock) {
         paintedBlocks.add(paintedBlock);
-        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.BLOCK, paintedBlock));
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.BLOCK, paintedBlock, true));
         markDirty();
     }
 
     public void addPaintedFace(PaintedBlock paintedBlock, PaintedFace paintedFace) {
         paintedBlock.paintedFaceList.add(paintedFace);
-        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.FACE, paintedFace));
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.FACE, paintedFace, true));
         markDirty();
     }
 
@@ -92,7 +91,7 @@ public class PaintbrushDataServer extends WorldSavedData {
         paint.x = x;
         paint.y = y;
         paintedFace.paintList.add(paint);
-        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.PAINT, paint));
+        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.PAINT, paint, true));
         markDirty();
     }
 

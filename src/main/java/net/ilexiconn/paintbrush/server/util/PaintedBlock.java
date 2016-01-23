@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
@@ -39,7 +38,6 @@ public class PaintedBlock implements Util<PaintedBlock> {
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         pos.writeToNBT(compound);
-        compound.setInteger("faceCount", paintedFaceList.size());
         NBTTagList list = new NBTTagList();
         for (PaintedFace paintedFace : paintedFaceList) {
             NBTTagCompound faceCompound = new NBTTagCompound();
@@ -53,8 +51,8 @@ public class PaintedBlock implements Util<PaintedBlock> {
     public PaintedBlock readFromNBT(NBTTagCompound compound) {
         pos = new BlockPos().readFromNBT(compound);
         paintedFaceList = Lists.newArrayList();
-        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
-        for (int i = 0; i < compound.getInteger("faceCount"); i++) {
+        NBTTagList list = compound.getTagList("faces", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < list.tagCount(); i++) {
             paintedFaceList.add(new PaintedFace().readFromNBT(list.getCompoundTagAt(i)));
         }
         return this;
@@ -83,16 +81,12 @@ public class PaintedBlock implements Util<PaintedBlock> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc) {
-        MovingObjectPosition object = mc.objectMouseOver;
-        if (object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            int x = object.blockX;
-            int y = object.blockY;
-            int z = object.blockZ;
-            BlockPos pos = new BlockPos(x, y, z);
-            PaintedBlock paintedBlock = new PaintedBlock();
-            paintedBlock.pos = pos;
-            PaintbrushDataClient.addPaintedBlock(paintedBlock);
+    public void updateClient(Minecraft mc, Object... data) {
+        PaintbrushDataClient.addPaintedBlock(this);
+        if (data.length == 0 || (boolean) data[0]) {
+            for (PaintedFace paintedFace : paintedFaceList) {
+                paintedFace.updateClient(mc);
+            }
         }
     }
 }

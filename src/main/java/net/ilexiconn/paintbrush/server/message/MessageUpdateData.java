@@ -11,21 +11,23 @@ import net.minecraft.entity.player.EntityPlayer;
 public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
     private Utils type;
     private Util util;
+    private boolean flag;
 
     public MessageUpdateData() {
 
     }
 
-    public MessageUpdateData(Utils type, Util util) {
+    public MessageUpdateData(Utils type, Util util, boolean flag) {
         this.type = type;
         this.util = util;
+        this.flag = flag;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void handleClientMessage(MessageUpdateData message, EntityPlayer player) {
         if (message.util != null) {
-            message.util.updateClient(Minecraft.getMinecraft());
+            message.util.updateClient(Minecraft.getMinecraft(), message.flag);
         }
     }
 
@@ -37,6 +39,7 @@ public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
     @Override
     public void fromBytes(ByteBuf buf) {
         type = Utils.values()[buf.readByte()];
+        flag = buf.readBoolean();
         if (type != null) {
             try {
                 util = type.getUtilClass().newInstance();
@@ -50,6 +53,7 @@ public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(type.ordinal());
+        buf.writeBoolean(flag);
         util.encode(buf);
     }
 }

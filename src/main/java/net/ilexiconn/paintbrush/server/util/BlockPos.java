@@ -60,7 +60,7 @@ public class BlockPos implements Util<BlockPos> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc) {
+    public void updateClient(Minecraft mc, Object... data) {
 
     }
 

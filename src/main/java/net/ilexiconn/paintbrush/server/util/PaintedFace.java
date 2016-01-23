@@ -39,7 +39,6 @@ public class PaintedFace implements Util<PaintedFace> {
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setInteger("facing", facing.ordinal());
-        compound.setInteger("paintCount", paintList.size());
         NBTTagList list = new NBTTagList();
         for (Paint paint : paintList) {
             NBTTagCompound paintCompound = new NBTTagCompound();
@@ -53,8 +52,8 @@ public class PaintedFace implements Util<PaintedFace> {
     public PaintedFace readFromNBT(NBTTagCompound compound) {
         facing = EnumFacing.values()[compound.getInteger("facing")];
         paintList = Lists.newArrayList();
-        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_LIST);
-        for (int i = 0; i < compound.getInteger("paintCount"); i++) {
+        NBTTagList list = compound.getTagList("paint", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < list.tagCount(); i++) {
             paintList.add(new Paint().readFromNBT(list.getCompoundTagAt(i)));
         }
         return this;
@@ -73,8 +72,7 @@ public class PaintedFace implements Util<PaintedFace> {
     public PaintedFace decode(ByteBuf buf) {
         facing = EnumFacing.values()[buf.readByte()];
         paintList = Lists.newArrayList();
-        int size = buf.readByte();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < buf.readByte(); i++) {
             paintList.add(new Paint().decode(buf));
         }
         return this;
@@ -82,17 +80,14 @@ public class PaintedFace implements Util<PaintedFace> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc) {
+    public void updateClient(Minecraft mc, Object... data) {
         MovingObjectPosition object = mc.objectMouseOver;
-        if (object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            int x = object.blockX;
-            int y = object.blockY;
-            int z = object.blockZ;
-            BlockPos pos = new BlockPos(x, y, z);
-            EnumFacing facing = EnumFacing.values()[object.sideHit];
-            PaintedFace paintedFace = new PaintedFace();
-            paintedFace.facing = facing;
-            PaintbrushDataClient.addPaintedFace(PaintbrushDataClient.getPaintedBlock(pos), paintedFace);
+        if (object != null && object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            BlockPos pos = new BlockPos(object.blockX, object.blockY, object.blockZ);
+            PaintbrushDataClient.addPaintedFace(PaintbrushDataClient.getPaintedBlock(pos), this);
+            for (Paint paint : paintList) {
+                paint.updateClient(mc);
+            }
         }
     }
 }

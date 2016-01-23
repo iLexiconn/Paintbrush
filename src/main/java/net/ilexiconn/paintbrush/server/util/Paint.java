@@ -127,15 +127,12 @@ public class Paint implements Util<Paint> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc) {
+    public void updateClient(Minecraft mc, Object... data) {
         MovingObjectPosition object = mc.objectMouseOver;
-        if (object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            int x = object.blockX;
-            int y = object.blockY;
-            int z = object.blockZ;
-            BlockPos pos = new BlockPos(x, y, z);
+        if (object != null && object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            BlockPos pos = new BlockPos(object.blockX, object.blockY, object.blockZ);
             EnumFacing facing = EnumFacing.values()[object.sideHit];
-            PaintbrushDataClient.addPaint(PaintbrushDataClient.getPaintedBlock(pos).getPaintedFace(facing), this.x, this.y, color);
+            PaintbrushDataClient.addPaint(PaintbrushDataClient.getPaintedBlock(pos).getPaintedFace(facing), this);
         }
     }
 
