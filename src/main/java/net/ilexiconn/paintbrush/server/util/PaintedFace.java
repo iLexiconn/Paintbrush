@@ -62,7 +62,6 @@ public class PaintedFace implements Util<PaintedFace> {
 
     @Override
     public void encode(ByteBuf buf) {
-        System.out.println("Encoding f:" + facing.ordinal() + ",c:" + paintList.size());
         buf.writeByte(facing.ordinal());
         buf.writeByte(paintList.size());
         for (Paint paint : paintList) {
@@ -75,7 +74,6 @@ public class PaintedFace implements Util<PaintedFace> {
         facing = EnumFacing.values()[buf.readByte()];
         paintList = Lists.newArrayList();
         int size = buf.readByte();
-        System.out.println("Decoding f:" + facing.ordinal() + ",c:" + size);
         for (int i = 0; i < size; i++) {
             paintList.add(new Paint().decode(buf));
         }

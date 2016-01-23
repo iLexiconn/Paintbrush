@@ -33,7 +33,6 @@ public class Paint implements Util<Paint> {
         double px = pos.x + this.x * 0.0625F;
         double py = pos.y + this.y * 0.0625F;
         double pz = pos.z;
-        System.out.println("Rendering: " + pos + ", face(" + facing + "), offset(" + this.x + "," + this.y + "), color(" + color.name() + ")");
 
         tessellator.setColorRGBA(r, g, b, 255);
         tessellator.addVertex(px, py, pz - 0.01F);
@@ -62,7 +61,6 @@ public class Paint implements Util<Paint> {
     @Override
     public void encode(ByteBuf buf) {
         int data = ((color.ordinal() & 0B1111) | ((x & 0B1111) << 4) | ((y & 0B1111) << 8));
-        System.out.println("Encoding c:" + color.ordinal() + ",x:" + x + ",y:" + y + " to " + data);
         buf.writeInt(data);
     }
 
@@ -72,7 +70,6 @@ public class Paint implements Util<Paint> {
         color = EnumChatFormatting.values()[data & 0B1111];
         x = (data >>> 4) & 0B1111;
         y = (data >>> 8) & 0B1111;
-        System.out.println("Decoding " + data + " to c:" + color.ordinal() + ",x:" + x + ",y:" + y);
         return this;
     }
 

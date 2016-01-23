@@ -64,7 +64,6 @@ public class PaintedBlock implements Util<PaintedBlock> {
     public void encode(ByteBuf buf) {
         pos.encode(buf);
         buf.writeByte(paintedFaceList.size());
-        System.out.println("Encoding c:" + paintedFaceList.size());
         for (PaintedFace paintedFace : paintedFaceList) {
             paintedFace.encode(buf);
         }
@@ -76,7 +75,6 @@ public class PaintedBlock implements Util<PaintedBlock> {
         pos.decode(buf);
         paintedFaceList = Lists.newArrayList();
         int size = buf.readByte();
-        System.out.println("Decoding c:" + size);
         for (int i = 0; i < size; i++) {
             paintedFaceList.add(new PaintedFace().decode(buf));
         }
