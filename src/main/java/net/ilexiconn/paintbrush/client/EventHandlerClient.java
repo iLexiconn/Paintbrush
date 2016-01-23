@@ -14,8 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.WorldEvent;
-
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
@@ -27,20 +26,15 @@ public class EventHandlerClient {
         double dX = view.lastTickPosX + (view.posX - view.lastTickPosX) * (double) event.partialTicks;
         double dY = view.lastTickPosY + (view.posY - view.lastTickPosY) * (double) event.partialTicks;
         double dZ = view.lastTickPosZ + (view.posZ - view.lastTickPosZ) * (double) event.partialTicks;
-        glDisable(GL_CULL_FACE);
-        glDisable(GL_TEXTURE_2D);
-
-        glColor4f(1, 1, 1, 1);
-        glPushMatrix();
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         for (PaintedBlock paintedBlock : PaintbrushDataClient.getPaintedBlocks()) {
             paintedBlock.render(mc, Tessellator.instance, dX, dY, dZ);
         }
 
-        glPopMatrix();
-
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 
     @SubscribeEvent

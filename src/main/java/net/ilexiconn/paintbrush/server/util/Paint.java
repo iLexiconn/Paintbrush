@@ -21,8 +21,9 @@ public class Paint implements Util<Paint> {
     @Override
     @SideOnly(Side.CLIENT)
     public void render(Minecraft mc, Tessellator tessellator, double x, double y, double z, Object... data) {
-        tessellator.startDrawingQuads();
+        GL11.glPushMatrix();
         GL11.glTranslated(x, y, z);
+        tessellator.startDrawingQuads();
         BlockPos pos = (BlockPos) data[0];
         EnumFacing facing = (EnumFacing) data[1];
         int hex = getColorCode(color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
@@ -32,7 +33,7 @@ public class Paint implements Util<Paint> {
         double px = pos.x + this.x * 0.0625F;
         double py = pos.y + this.y * 0.0625F;
         double pz = pos.z;
-        System.out.println("Rendering: " + pos + ", face(" + facing + "), offset(" + px + ":" + py + "), color(" + color.name() + ")");
+        System.out.println("Rendering: " + pos + ", face(" + facing + "), offset(" + px + "," + py + "), color(" + color.name() + ")");
 
         tessellator.setColorRGBA(r, g, b, 255);
         tessellator.addVertex(px, py, pz - 0.01F);
@@ -40,6 +41,7 @@ public class Paint implements Util<Paint> {
         tessellator.addVertex(px + 0.0625F, py + 0.0625F, pz - 0.01F);
         tessellator.addVertex(px, py + 0.0625F, pz - 0.01F);
         tessellator.draw();
+        GL11.glPopMatrix();
     }
 
     @Override
