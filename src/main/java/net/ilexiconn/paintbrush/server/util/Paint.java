@@ -22,7 +22,7 @@ public class Paint implements Util<Paint> {
     @SideOnly(Side.CLIENT)
     public void render(Minecraft mc, Tessellator tessellator, double x, double y, double z, Object... data) {
         GL11.glPushMatrix();
-        GL11.glTranslated(x, y, z);
+        GL11.glTranslated(-x, -y, -z);
         tessellator.startDrawingQuads();
         BlockPos pos = (BlockPos) data[0];
         EnumFacing facing = (EnumFacing) data[1];
@@ -33,7 +33,7 @@ public class Paint implements Util<Paint> {
         double px = pos.x + this.x * 0.0625F;
         double py = pos.y + this.y * 0.0625F;
         double pz = pos.z;
-        System.out.println("Rendering: " + pos + ", face(" + facing + "), offset(" + px + "," + py + "), color(" + color.name() + ")");
+        System.out.println("Rendering: " + pos + ", face(" + facing + "), offset(" + this.x + "," + this.y + "), color(" + color.name() + ")");
 
         tessellator.setColorRGBA(r, g, b, 255);
         tessellator.addVertex(px, py, pz - 0.01F);
@@ -86,7 +86,7 @@ public class Paint implements Util<Paint> {
             int z = object.blockZ;
             BlockPos pos = new BlockPos(x, y, z);
             EnumFacing facing = EnumFacing.values()[object.sideHit];
-            PaintbrushDataClient.addPaint(PaintbrushDataClient.getPaintedBlock(pos).getPaintedFace(facing), x, y, color);
+            PaintbrushDataClient.addPaint(PaintbrushDataClient.getPaintedBlock(pos).getPaintedFace(facing), this.x, this.y, color);
         }
     }
 
