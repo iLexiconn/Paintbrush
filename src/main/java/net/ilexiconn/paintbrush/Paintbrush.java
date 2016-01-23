@@ -19,6 +19,16 @@ public class Paintbrush {
 
     public static final String VERSION = "0.1.0";
 
+    /*
+     * TODO
+     *
+     * - Paintbrush sizes
+     * - Paintbrush ink and recipes (dye)
+     * - Fix crash when spamming paint on 'new' blocks
+     * - Support for multiple dimensions
+     * - Paint lighting
+     */
+
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
