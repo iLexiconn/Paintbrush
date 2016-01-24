@@ -22,6 +22,10 @@ public class BlockPos implements Util<BlockPos> {
         this.z = z;
     }
 
+    public BlockPos offset(int x, int y, int z) {
+        return new BlockPos(this.x + x, this.y + y, this.z + z);
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void render(Minecraft mc, Tessellator tessellator, double x, double y, double z, Object... data) {

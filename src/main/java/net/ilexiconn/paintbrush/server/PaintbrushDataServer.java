@@ -7,7 +7,6 @@ import net.ilexiconn.paintbrush.server.util.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.storage.MapStorage;
@@ -16,8 +15,9 @@ import net.minecraftforge.common.util.Constants;
 import java.util.List;
 
 public class PaintbrushDataServer extends WorldSavedData {
-    private List<PaintedBlock> paintedBlocks = Lists.newArrayList();
     private static PaintbrushDataServer instance;
+
+    public List<PaintedBlock> paintedBlockList = Lists.newArrayList();
 
     public PaintbrushDataServer() {
         super("paintbrush");
@@ -32,7 +32,7 @@ public class PaintbrushDataServer extends WorldSavedData {
         NBTTagList paint = compound.getTagList("paint", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < paint.tagCount(); i++) {
             NBTTagCompound paintTag = paint.getCompoundTagAt(i);
-            paintedBlocks.add(new PaintedBlock().readFromNBT(paintTag));
+            paintedBlockList.add(new PaintedBlock().readFromNBT(paintTag));
         }
     }
 
@@ -40,7 +40,7 @@ public class PaintbrushDataServer extends WorldSavedData {
     public void writeToNBT(NBTTagCompound compound) {
         NBTTagList paint = new NBTTagList();
 
-        for (PaintedBlock paintedBlock : paintedBlocks) {
+        for (PaintedBlock paintedBlock : paintedBlockList) {
             NBTTagCompound paintTag = new NBTTagCompound();
             paintedBlock.writeToNBT(paintTag);
             paint.appendTag(paintTag);
@@ -49,22 +49,8 @@ public class PaintbrushDataServer extends WorldSavedData {
         compound.setTag("paint", paint);
     }
 
-    public Paint getPaint(BlockPos pos, EnumFacing facing, int x, int y) {
-        PaintedBlock paintedBlock = getPaintedBlock(pos);
-
-        if (paintedBlock != null) {
-            PaintedFace paintedFace = paintedBlock.getPaintedFace(facing);
-
-            if (paintedFace != null) {
-                return paintedFace.getPaint(x, y);
-            }
-        }
-
-        return null;
-    }
-
     public PaintedBlock getPaintedBlock(BlockPos pos) {
-        for (PaintedBlock paintedBlock : paintedBlocks) {
+        for (PaintedBlock paintedBlock : paintedBlockList) {
             if (pos.equals(paintedBlock.pos)) {
                 return paintedBlock;
             }
@@ -74,7 +60,7 @@ public class PaintbrushDataServer extends WorldSavedData {
     }
 
     public void addPaintedBlock(PaintedBlock paintedBlock) {
-        paintedBlocks.add(paintedBlock);
+        paintedBlockList.add(paintedBlock);
         Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.BLOCK, paintedBlock, true));
         markDirty();
     }
@@ -95,8 +81,22 @@ public class PaintbrushDataServer extends WorldSavedData {
         markDirty();
     }
 
-    public List<PaintedBlock> getPaintedBlocks() {
-        return paintedBlocks;
+    public void removePaintedBlock(PaintedBlock paintedBlock) {
+        if (paintedBlockList.contains(paintedBlock)) {
+            paintedBlockList.remove(paintedBlock);
+            //Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.BLOCK, paintedBlock, true));
+            markDirty();
+        }
+    }
+
+    public void removePaintedFace(PaintedFace paintedFace) {
+        for (PaintedBlock paintedBlock : paintedBlockList) {
+            if (paintedBlock.paintedFaceList.contains(paintedFace)) {
+                paintedBlock.paintedFaceList.remove(paintedFace);
+                //Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.FACE, paintedFace, true));
+                markDirty();
+            }
+        }
     }
 
     public static PaintbrushDataServer get(World world) {
