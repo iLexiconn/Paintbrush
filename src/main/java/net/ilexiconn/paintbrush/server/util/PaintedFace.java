@@ -84,13 +84,10 @@ public class PaintedFace implements Util<PaintedFace> {
     @Override
     @SideOnly(Side.CLIENT)
     public void updateClient(Minecraft mc, EntityPlayer player, Object... data) {
-        MovingObjectPosition object = mc.objectMouseOver;
-        if (object != null && object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            BlockPos pos = new BlockPos(object.blockX, object.blockY, object.blockZ);
-            PaintbrushDataClient.addPaintedFace(PaintbrushDataClient.getPaintedBlock(pos), this);
-            for (Paint paint : paintList) {
-                paint.updateClient(mc, player);
-            }
+        BlockPos pos = (BlockPos) data[0];
+        PaintbrushDataClient.addPaintedFace(PaintbrushDataClient.getPaintedBlock(pos), this);
+        for (Paint paint : paintList) {
+            paint.updateClient(mc, player);
         }
     }
 
