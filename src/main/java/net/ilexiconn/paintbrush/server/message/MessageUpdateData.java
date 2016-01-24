@@ -7,6 +7,7 @@ import net.ilexiconn.paintbrush.server.util.Util;
 import net.ilexiconn.paintbrush.server.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 
 public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
     private Utils type;
@@ -27,13 +28,15 @@ public class MessageUpdateData extends AbstractMessage<MessageUpdateData> {
     @SideOnly(Side.CLIENT)
     public void handleClientMessage(MessageUpdateData message, EntityPlayer player) {
         if (message.util != null) {
-            message.util.updateClient(Minecraft.getMinecraft(), message.flag);
+            message.util.updateClient(Minecraft.getMinecraft(), player, message.flag);
         }
     }
 
     @Override
     public void handleServerMessage(MessageUpdateData message, EntityPlayer player) {
-
+        if (message.util != null) {
+            message.util.updateServer(MinecraftServer.getServer(), player, message.flag);
+        }
     }
 
     @Override

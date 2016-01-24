@@ -3,7 +3,8 @@ package net.ilexiconn.paintbrush.server.util;
 public enum Utils {
     PAINT,
     FACE,
-    BLOCK;
+    BLOCK,
+    SIZE;
 
     public Class<? extends Util> getUtilClass() {
         switch (this) {
@@ -13,6 +14,8 @@ public enum Utils {
                 return PaintedFace.class;
             case BLOCK:
                 return PaintedBlock.class;
+            case SIZE:
+                return PaintbrushSize.class;
         }
         return Util.class;
     }

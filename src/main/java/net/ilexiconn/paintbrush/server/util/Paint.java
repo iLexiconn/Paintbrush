@@ -7,7 +7,9 @@ import net.ilexiconn.paintbrush.client.PaintbrushDataClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
@@ -127,13 +129,18 @@ public class Paint implements Util<Paint> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc, Object... data) {
+    public void updateClient(Minecraft mc, EntityPlayer player, Object... data) {
         MovingObjectPosition object = mc.objectMouseOver;
         if (object != null && object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             BlockPos pos = new BlockPos(object.blockX, object.blockY, object.blockZ);
             EnumFacing facing = EnumFacing.values()[object.sideHit];
             PaintbrushDataClient.addPaint(PaintbrushDataClient.getPaintedBlock(pos).getPaintedFace(facing), this);
         }
+    }
+
+    @Override
+    public void updateServer(MinecraftServer mc, EntityPlayer player, Object... data) {
+
     }
 
     @SideOnly(Side.CLIENT)

@@ -7,8 +7,10 @@ import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.client.PaintbrushDataClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.Constants;
@@ -81,14 +83,19 @@ public class PaintedFace implements Util<PaintedFace> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc, Object... data) {
+    public void updateClient(Minecraft mc, EntityPlayer player, Object... data) {
         MovingObjectPosition object = mc.objectMouseOver;
         if (object != null && object.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             BlockPos pos = new BlockPos(object.blockX, object.blockY, object.blockZ);
             PaintbrushDataClient.addPaintedFace(PaintbrushDataClient.getPaintedBlock(pos), this);
             for (Paint paint : paintList) {
-                paint.updateClient(mc);
+                paint.updateClient(mc, player);
             }
         }
+    }
+
+    @Override
+    public void updateServer(MinecraftServer mc, EntityPlayer player, Object... data) {
+
     }
 }

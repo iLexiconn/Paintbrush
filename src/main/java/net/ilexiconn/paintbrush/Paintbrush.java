@@ -22,7 +22,6 @@ public class Paintbrush {
     /*
      * TODO
      *
-     * - Paintbrush sizes
      * - Paintbrush ink and recipes (dye)
      * - Fix crash when spamming paint on 'new' blocks
      * - Support for multiple dimensions
@@ -33,6 +32,7 @@ public class Paintbrush {
     public void init(FMLInitializationEvent event) {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
         networkWrapper.registerMessage(MessageUpdateData.class, MessageUpdateData.class, 0, Side.CLIENT);
+        networkWrapper.registerMessage(MessageUpdateData.class, MessageUpdateData.class, 1, Side.SERVER);
 
         GameRegistry.registerItem(new PaintbrushItem(), "paintbrush");
         proxy.init();

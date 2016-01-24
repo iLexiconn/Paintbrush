@@ -5,7 +5,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 
 public interface Util<SELF extends Util> {
     @SideOnly(Side.CLIENT)
@@ -20,5 +22,7 @@ public interface Util<SELF extends Util> {
     SELF decode(ByteBuf buf);
 
     @SideOnly(Side.CLIENT)
-    void updateClient(Minecraft mc, Object... data);
+    void updateClient(Minecraft mc, EntityPlayer player, Object... data);
+
+    void updateServer(MinecraftServer mc, EntityPlayer player, Object... data);
 }

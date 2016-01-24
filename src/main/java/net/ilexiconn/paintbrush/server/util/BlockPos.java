@@ -5,7 +5,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 
 public class BlockPos implements Util<BlockPos> {
     public int x;
@@ -64,7 +66,12 @@ public class BlockPos implements Util<BlockPos> {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void updateClient(Minecraft mc, Object... data) {
+    public void updateClient(Minecraft mc, EntityPlayer player, Object... data) {
+
+    }
+
+    @Override
+    public void updateServer(MinecraftServer mc, EntityPlayer player, Object... data) {
 
     }
 

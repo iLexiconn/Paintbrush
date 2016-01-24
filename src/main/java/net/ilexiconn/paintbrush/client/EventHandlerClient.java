@@ -3,10 +3,13 @@ package net.ilexiconn.paintbrush.client;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
+import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
+import net.ilexiconn.paintbrush.server.util.PaintbrushSize;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
+import net.ilexiconn.paintbrush.server.util.Utils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -57,6 +60,7 @@ public class EventHandlerClient {
                         size += event.dwheel / 120;
                     }
                     paintbrush.setDamage(stack, paintbrush.getDamage(paintbrush.getColorFromDamage(stack), paintbrush.getInkFromDamage(stack), size, paintbrush.isStackInfinite(stack)));
+                    Paintbrush.networkWrapper.sendToServer(new MessageUpdateData(Utils.SIZE, new PaintbrushSize(size), true));
                     event.setCanceled(true);
                 }
             }
@@ -109,11 +113,7 @@ public class EventHandlerClient {
         }
     }
 
-    /**
-     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
-     */
-    public void drawRect(int x, int y, int width, int height)
-    {
+    public void drawRect(int x, int y, int width, int height) {
         float widthScale = 1.0F / width;
         float heightScale = 1.0F / height;
 
@@ -121,10 +121,10 @@ public class EventHandlerClient {
 
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double)(x), (double)(y + height), zLevel, (double)((float)(0) * widthScale), (double)((float)(height) * heightScale));
-        tessellator.addVertexWithUV((double)(x + width), (double)(y + height), zLevel, (double)((float)(width) * widthScale), (double)((float)(height) * heightScale));
-        tessellator.addVertexWithUV((double)(x + width), (double)(y), zLevel, (double)((float)(width) * widthScale), (double)((float)(0) * heightScale));
-        tessellator.addVertexWithUV((double)(x), (double)(y), zLevel, (double)((float)(0) * widthScale), (double)((float)(0) * heightScale));
+        tessellator.addVertexWithUV((double) (x), (double) (y + height), zLevel, (double) ((float) (0) * widthScale), (double) ((float) (height) * heightScale));
+        tessellator.addVertexWithUV((double) (x + width), (double) (y + height), zLevel, (double) ((float) (width) * widthScale), (double) ((float) (height) * heightScale));
+        tessellator.addVertexWithUV((double) (x + width), (double) (y), zLevel, (double) ((float) (width) * widthScale), (double) ((float) (0) * heightScale));
+        tessellator.addVertexWithUV((double) (x), (double) (y), zLevel, (double) ((float) (0) * widthScale), (double) ((float) (0) * heightScale));
         tessellator.draw();
     }
 }
