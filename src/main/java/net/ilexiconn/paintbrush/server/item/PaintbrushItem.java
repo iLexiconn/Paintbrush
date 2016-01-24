@@ -136,7 +136,15 @@ public class PaintbrushItem extends Item {
                 data.addPaintedFace(paintedBlock, paintedFace);
             }
 
-            data.addPaint(paintedFace, drawX, drawY, color);
+            int size = getSizeFromDamage(stack);
+
+            for (int ring = 0; ring < size; ring++) {
+                for (int i = 0; i < 360; ++i) {
+                    int pX = (int) (drawX + (-Math.sin(i * (float) Math.PI / 180.0F) * ring));
+                    int pY = (int) (drawY + (Math.cos(i * (float) Math.PI / 180.0F) * ring));
+                    data.addPaint(paintedFace, pX, pY, color);
+                }
+            }
         }
 
         return false;
