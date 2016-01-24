@@ -6,12 +6,15 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import org.lwjgl.opengl.GL11;
@@ -39,7 +42,7 @@ public class EventHandlerClient {
 
     @SubscribeEvent
     public void onMouseInput(MouseEvent event) {
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        EntityPlayer player = mc.thePlayer;
         if (event.dwheel != 0 && player != null && player.isSneaking()) {
             System.out.println(event.dwheel);
             ItemStack stack = player.getCurrentEquippedItem();
@@ -65,5 +68,63 @@ public class EventHandlerClient {
         if (event.world.isRemote) {
             PaintbrushDataClient.getPaintedBlocks().clear();
         }
+    }
+
+    @SubscribeEvent
+    public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+        EntityPlayer player = mc.thePlayer;
+        if (player != null) {
+            ItemStack stack = player.getCurrentEquippedItem();
+            if (stack != null) {
+                Item item = stack.getItem();
+                if (item instanceof PaintbrushItem) {
+                    PaintbrushItem paintbrush = (PaintbrushItem) item;
+                    int size = paintbrush.getSizeFromDamage(stack);
+                    int color = paintbrush.getColorCode(EnumChatFormatting.values()[paintbrush.getColorFromDamage(stack)].getFormattingCode(), mc.fontRenderer);
+                    int b = color & 0xFF;
+                    int g = (color >>> 8) & 0xFF;
+                    int r = (color >>> 16) & 0xFF;
+
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(16.0D, 16.0D, 0.0D);
+                    GL11.glScalef(2.0F, 2.0F, 2.0F);
+                    GL11.glColor4f(r / 255.0F, g / 255.0F, b / 255.0F, 1.0F);
+                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+                    for (int ring = 0; ring < size; ring++) {
+                        for (int i = 0; i < 360; ++i) {
+                            double rad = Math.toRadians((double) i);
+                            int pX = (int) (-Math.sin(rad) * ring);
+                            int pY = (int) (Math.cos(rad) * ring);
+
+                            drawRect(pX, pY, 1, 1);
+                        }
+                    }
+
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH);
+                    GL11.glPopMatrix();
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
+     */
+    public void drawRect(int x, int y, int width, int height)
+    {
+        float widthScale = 1.0F / width;
+        float heightScale = 1.0F / height;
+
+        double zLevel = 1.0;
+
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV((double)(x), (double)(y + height), zLevel, (double)((float)(0) * widthScale), (double)((float)(height) * heightScale));
+        tessellator.addVertexWithUV((double)(x + width), (double)(y + height), zLevel, (double)((float)(width) * widthScale), (double)((float)(height) * heightScale));
+        tessellator.addVertexWithUV((double)(x + width), (double)(y), zLevel, (double)((float)(width) * widthScale), (double)((float)(0) * heightScale));
+        tessellator.addVertexWithUV((double)(x), (double)(y), zLevel, (double)((float)(0) * widthScale), (double)((float)(0) * heightScale));
+        tessellator.draw();
     }
 }

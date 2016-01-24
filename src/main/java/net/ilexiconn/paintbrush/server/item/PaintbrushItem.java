@@ -140,9 +140,10 @@ public class PaintbrushItem extends Item {
 
             for (int ring = 0; ring < size; ring++) {
                 for (int i = 0; i < 360; ++i) {
-                    int pX = (int) (drawX + (-Math.sin(i * (float) Math.PI / 180.0F) * ring));
-                    int pY = (int) (drawY + (Math.cos(i * (float) Math.PI / 180.0F) * ring));
-                    data.addPaint(paintedFace, pX, pY, color);
+                    double rad = Math.toRadians((double) i);
+                    int pX = (int) (-Math.sin(rad) * ring);
+                    int pY = (int) (Math.cos(rad) * ring);
+                    data.addPaint(paintedFace, drawX + pX, drawY + pY, color);
                 }
             }
         }
