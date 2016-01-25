@@ -3,12 +3,10 @@ package net.ilexiconn.paintbrush.server.item;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
-import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -31,8 +29,7 @@ public class PaintScraperItem extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
-        if (!world.isRemote) {
-            EnumFacing facing = EnumFacing.values()[face];
+        EnumFacing facing = EnumFacing.values()[face];
 
             for (int ring = 0; ring < stack.getItemDamage(); ring++) {
                 for (int i = 0; i < 360; ++i) {
@@ -43,7 +40,6 @@ public class PaintScraperItem extends Item {
                     removePaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY);
                 }
             }
-        }
 
         return false;
     }
@@ -86,6 +82,9 @@ public class PaintScraperItem extends Item {
         }
 
         PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
+        if (paintedBlock == null) {
+            return;
+        }
 
         int offsetX = 0;
         int offsetY = 0;
@@ -114,14 +113,6 @@ public class PaintScraperItem extends Item {
                     break;
                 }
             }
-        }
-        if (paintedBlock == null) {
-            paintedBlock = new PaintedBlockEntity(world);
-            paintedBlock.blockX = x;
-            paintedBlock.blockY = y;
-            paintedBlock.blockZ = z;
-            paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
-            world.spawnEntityInWorld(paintedBlock);
         }
 
         return paintedBlock;
