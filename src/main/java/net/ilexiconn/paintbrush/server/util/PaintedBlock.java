@@ -87,7 +87,7 @@ public class PaintedBlock implements Util<PaintedBlock> {
         PaintbrushDataClient.addPaintedBlock(this);
         if (data.length == 0 || (boolean) data[0]) {
             for (PaintedFace paintedFace : paintedFaceList) {
-                paintedFace.updateClient(mc, player, pos);
+                paintedFace.updateClient(mc, player);
             }
         }
     }
