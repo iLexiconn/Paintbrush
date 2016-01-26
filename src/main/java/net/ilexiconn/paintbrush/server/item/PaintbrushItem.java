@@ -3,6 +3,7 @@ package net.ilexiconn.paintbrush.server.item;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.util.BlockPos;
+import net.ilexiconn.paintbrush.server.util.Paint;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.ilexiconn.paintbrush.server.util.PaintedFace;
 import net.ilexiconn.paintbrush.server.PaintbrushDataServer;
@@ -93,6 +94,7 @@ public class PaintbrushItem extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
+        int damage = 0;
         if (!world.isRemote) {
             PaintbrushDataServer data = PaintbrushDataServer.get(world);
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
@@ -143,9 +145,18 @@ public class PaintbrushItem extends Item {
                     double rad = Math.toRadians((double) i);
                     int pX = (int) (-Math.sin(rad) * ring);
                     int pY = (int) (Math.cos(rad) * ring);
-                    data.addPaint(paintedFace, drawX + pX, drawY + pY, color);
+                    Paint paint = new Paint();
+                    paint.x = drawX + pX;
+                    paint.y = drawY + pY;
+                    paint.color = color;
+                    data.addPaint(paintedFace, paint);
+                    damage++;
                 }
             }
+        }
+        if (damage != 0) {
+            System.out.println(getDamage(getColorFromDamage(stack), getInkFromDamage(stack) + damage, getSizeFromDamage(stack), isStackInfinite(stack)));
+            stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack) + damage, getSizeFromDamage(stack), isStackInfinite(stack)));
         }
 
         return false;
@@ -163,6 +174,7 @@ public class PaintbrushItem extends Item {
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
+        items.add(new ItemStack(item, 1, getDamage(0, 0, 1, false)));
         for (int i = 0; i < 16; i++) {
             items.add(new ItemStack(item, 1, getDamage(i, 0, 1, true)));
         }

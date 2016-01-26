@@ -6,7 +6,6 @@ import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
 import net.ilexiconn.paintbrush.server.util.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.storage.MapStorage;
@@ -71,14 +70,21 @@ public class PaintbrushDataServer extends WorldSavedData {
         markDirty();
     }
 
-    public void addPaint(PaintedFace paintedFace, int x, int y, EnumChatFormatting color) {
-        Paint paint = new Paint();
-        paint.color = color;
-        paint.x = x;
-        paint.y = y;
-        paintedFace.paintList.add(paint);
-        Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.PAINT, paint, true));
-        markDirty();
+    public void addPaint(PaintedFace paintedFace, Paint paint) {
+        if (!hasPaint(paintedFace, paint.x, paint.y)) {
+            paintedFace.paintList.add(paint);
+            Paintbrush.networkWrapper.sendToAll(new MessageUpdateData(Utils.PAINT, paint, true));
+            markDirty();
+        }
+    }
+
+    public boolean hasPaint(PaintedFace paintedFace, int x, int y) {
+        for (Paint paint : paintedFace.paintList) {
+            if (paint.x == x && paint.y == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removePaintedBlock(PaintedBlock paintedBlock) {

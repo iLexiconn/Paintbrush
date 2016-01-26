@@ -6,7 +6,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
-import net.ilexiconn.paintbrush.server.util.PaintbrushSize;
+import net.ilexiconn.paintbrush.server.util.BrushSize;
 import net.ilexiconn.paintbrush.server.util.PaintedBlock;
 import net.ilexiconn.paintbrush.server.util.Utils;
 import net.minecraft.client.Minecraft;
@@ -60,7 +60,7 @@ public class EventHandlerClient {
                         size += event.dwheel / 120;
                     }
                     paintbrush.setDamage(stack, paintbrush.getDamage(paintbrush.getColorFromDamage(stack), paintbrush.getInkFromDamage(stack), size, paintbrush.isStackInfinite(stack)));
-                    Paintbrush.networkWrapper.sendToServer(new MessageUpdateData(Utils.SIZE, new PaintbrushSize(size), true));
+                    Paintbrush.networkWrapper.sendToServer(new MessageUpdateData(Utils.SIZE, new BrushSize(size), true));
                     event.setCanceled(true);
                 }
             }

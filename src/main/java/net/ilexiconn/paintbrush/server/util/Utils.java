@@ -15,7 +15,7 @@ public enum Utils {
             case BLOCK:
                 return PaintedBlock.class;
             case SIZE:
-                return PaintbrushSize.class;
+                return BrushSize.class;
         }
         return Util.class;
     }

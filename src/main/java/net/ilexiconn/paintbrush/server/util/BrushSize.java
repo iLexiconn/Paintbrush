@@ -11,14 +11,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 
-public class PaintbrushSize implements Util<PaintbrushSize> {
+public class BrushSize implements Util<BrushSize> {
     private int size;
 
-    public PaintbrushSize() {
+    public BrushSize() {
 
     }
 
-    public PaintbrushSize(int size) {
+    public BrushSize(int size) {
         this.size = size;
     }
 
@@ -34,7 +34,7 @@ public class PaintbrushSize implements Util<PaintbrushSize> {
     }
 
     @Override
-    public PaintbrushSize readFromNBT(NBTTagCompound compound) {
+    public BrushSize readFromNBT(NBTTagCompound compound) {
         return this;
     }
 
@@ -44,7 +44,7 @@ public class PaintbrushSize implements Util<PaintbrushSize> {
     }
 
     @Override
-    public PaintbrushSize decode(ByteBuf buf) {
+    public BrushSize decode(ByteBuf buf) {
         size = buf.readInt();
         return this;
     }
