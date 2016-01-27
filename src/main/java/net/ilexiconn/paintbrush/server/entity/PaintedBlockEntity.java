@@ -5,6 +5,7 @@ import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
+import net.ilexiconn.paintbrush.server.message.RemovePaintMessage;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -54,6 +55,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         }
         if (toRemove != null) {
             this.paintList.remove(toRemove);
+            Paintbrush.networkWrapper.sendToAll(new RemovePaintMessage(this, toRemove));
         }
     }
 

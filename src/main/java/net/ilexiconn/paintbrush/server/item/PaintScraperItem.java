@@ -29,7 +29,8 @@ public class PaintScraperItem extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
-        EnumFacing facing = EnumFacing.values()[face];
+        if (!world.isRemote) {
+            EnumFacing facing = EnumFacing.values()[face];
 
             for (int ring = 0; ring < stack.getItemDamage(); ring++) {
                 for (int i = 0; i < 360; ++i) {
@@ -40,6 +41,7 @@ public class PaintScraperItem extends Item {
                     removePaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY);
                 }
             }
+        }
 
         return false;
     }
@@ -127,7 +129,7 @@ public class PaintScraperItem extends Item {
             blockPos--;
         }
 
-        return new int[] { blockPos, paintPos };
+        return new int[]{blockPos, paintPos};
     }
 
     @Override

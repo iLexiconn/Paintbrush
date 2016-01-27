@@ -14,12 +14,13 @@ import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
+import net.ilexiconn.paintbrush.server.message.RemovePaintMessage;
 import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.opencl.CL;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
@@ -38,6 +39,7 @@ public class Paintbrush {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
         AbstractMessage.registerMessage(networkWrapper, AddPaintMessage.class, 0, Side.CLIENT);
         AbstractMessage.registerMessage(networkWrapper, UpdateSizeMessage.class, 1, Side.SERVER);
+        AbstractMessage.registerMessage(networkWrapper, RemovePaintMessage.class, 2, Side.CLIENT);
 
         paintbrush = new PaintbrushItem();
 
