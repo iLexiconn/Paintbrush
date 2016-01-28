@@ -5,11 +5,15 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.ilexiconn.paintbrush.server.ProxyServer;
+import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
-import net.ilexiconn.paintbrush.server.message.MessageUpdateData;
+import net.ilexiconn.paintbrush.server.message.AbstractMessage;
+import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
+import net.ilexiconn.paintbrush.server.message.UpdatePaintedBlockMessage;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
@@ -19,21 +23,13 @@ public class Paintbrush {
 
     public static final String VERSION = "0.1.0";
 
-    /*
-     * TODO
-     *
-     * - Paintbrush ink and recipes (dye)
-     * - Fix crash when spamming paint on 'new' blocks
-     * - Support for multiple dimensions
-     * - Paint lighting
-     */
-
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
-        networkWrapper.registerMessage(MessageUpdateData.class, MessageUpdateData.class, 0, Side.CLIENT);
-        networkWrapper.registerMessage(MessageUpdateData.class, MessageUpdateData.class, 1, Side.SERVER);
+        AbstractMessage.registerMessage(networkWrapper, UpdatePaintedBlockMessage.class, 0, Side.CLIENT);
+        AbstractMessage.registerMessage(networkWrapper, AddPaintMessage.class, 1, Side.CLIENT);
 
+        EntityRegistry.registerModEntity(PaintedBlockEntity.class, "paintedBlock", 0, this, 64, 1, true);
         GameRegistry.registerItem(new PaintbrushItem(), "paintbrush");
         proxy.init();
     }

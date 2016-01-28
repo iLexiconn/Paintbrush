@@ -2,11 +2,8 @@ package net.ilexiconn.paintbrush.server.item;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.ilexiconn.paintbrush.server.util.BlockPos;
+import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
-import net.ilexiconn.paintbrush.server.util.PaintedBlock;
-import net.ilexiconn.paintbrush.server.util.PaintedFace;
-import net.ilexiconn.paintbrush.server.PaintbrushDataServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -14,10 +11,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -94,69 +88,49 @@ public class PaintbrushItem extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
-        int damage = 0;
         if (!world.isRemote) {
-            PaintbrushDataServer data = PaintbrushDataServer.get(world);
+            PaintedBlockEntity paintedBlock = null;
+            List<PaintedBlockEntity> paintedBlockList = world.getEntitiesWithinAABB(PaintedBlockEntity.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1.0F, y + 1.0F, z + 1.0F).expand(1.0F, 1.0F, 1.0F));
+            for (PaintedBlockEntity entity : paintedBlockList) {
+                System.out.println(entity.posX + ", " + entity.posY + ", " + entity.posZ + ", " + x + ", " + y + ", " + z);
+                if (entity.posX == x && entity.posY == y && entity.posZ == z) {
+                    paintedBlock = entity;
+                }
+            }
+            if (paintedBlock == null) {
+                paintedBlock = new PaintedBlockEntity(world);
+                paintedBlock.posX = x;
+                paintedBlock.posY = y;
+                paintedBlock.posZ = z;
+                world.spawnEntityInWorld(paintedBlock);
+            }
+
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
 
-            int resolution = 16;
+            int pixelX = (int) (hitX * 16);
+            int pixelY = (int) (hitY * 16);
+            int pixelZ = (int) (hitZ * 16);
 
-            int pixelX = (int) (hitX * resolution);
-            int pixelY = (int) (hitY * resolution);
-            int pixelZ = (int) (hitZ * resolution);
-
-            int drawX = 0;
-            int drawY = 0;
+            int offsetX = 0;
+            int offsetY = 0;
 
             EnumFacing facing = EnumFacing.values()[face];
 
             if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-                drawX = pixelX;
-                drawY = pixelZ;
+                offsetX = pixelX;
+                offsetY = pixelZ;
             } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-                drawX = pixelX;
-                drawY = pixelY;
+                offsetX = pixelX;
+                offsetY = pixelY;
             } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
-                drawX = pixelZ;
-                drawY = pixelY;
-            }
-
-            BlockPos pos = new BlockPos(x, y, z);
-            PaintedBlock paintedBlock = data.getPaintedBlock(pos);
-
-            if (paintedBlock == null) {
-                paintedBlock = new PaintedBlock();
-                paintedBlock.pos = pos;
-                data.addPaintedBlock(paintedBlock);
-            }
-
-            PaintedFace paintedFace = paintedBlock.getPaintedFace(facing);
-
-            if (paintedFace == null) {
-                paintedFace = new PaintedFace();
-                paintedFace.facing = facing;
-                data.addPaintedFace(paintedBlock, paintedFace);
+                offsetX = pixelZ;
+                offsetY = pixelY;
             }
 
             int size = getSizeFromDamage(stack);
 
-            for (int ring = 0; ring < size; ring++) {
-                for (int i = 0; i < 360; ++i) {
-                    double rad = Math.toRadians((double) i);
-                    int pX = (int) (-Math.sin(rad) * ring);
-                    int pY = (int) (Math.cos(rad) * ring);
-                    Paint paint = new Paint();
-                    paint.x = drawX + pX;
-                    paint.y = drawY + pY;
-                    paint.color = color;
-                    data.addPaint(paintedFace, paint);
-                    damage++;
-                }
-            }
-        }
-        if (damage != 0) {
-            System.out.println(getDamage(getColorFromDamage(stack), getInkFromDamage(stack) + damage, getSizeFromDamage(stack), isStackInfinite(stack)));
-            stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack) + damage, getSizeFromDamage(stack), isStackInfinite(stack)));
+            Paint paint = new Paint(facing, offsetX, offsetY, color);
+            paintedBlock.addPaint(paint);
         }
 
         return false;
