@@ -98,9 +98,7 @@ public class PaintbrushItem extends Item {
             }
             if (paintedBlock == null) {
                 paintedBlock = new PaintedBlockEntity(world);
-                paintedBlock.posX = x;
-                paintedBlock.posY = y;
-                paintedBlock.posZ = z;
+                paintedBlock.setPositionAndRotation(x, y, z, 0, 0);
                 world.spawnEntityInWorld(paintedBlock);
             }
 
