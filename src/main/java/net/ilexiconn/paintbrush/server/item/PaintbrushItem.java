@@ -90,7 +90,7 @@ public class PaintbrushItem extends Item {
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             PaintedBlockEntity paintedBlock = null;
-            List<PaintedBlockEntity> paintedBlockList = world.getEntitiesWithinAABB(PaintedBlockEntity.class, AxisAlignedBB.getBoundingBox(x - 1.0F, y - 1.0F, z - 1.0F, x + 1.0F, y + 1.0F, z + 1.0F).expand(2.0, 2.0, 2.0));
+            List<PaintedBlockEntity> paintedBlockList = world.getEntitiesWithinAABB(PaintedBlockEntity.class, AxisAlignedBB.getBoundingBox(x - 1.0F, y - 1.0F, z - 1.0F, x + 1.0F, y + 1.0F, z + 1.0F).expand(2.0F, 2.0F, 2.0F));
             for (PaintedBlockEntity entity : paintedBlockList) {
                 if (entity.posX == x && entity.posY == y && entity.posZ == z) {
                     paintedBlock = entity;

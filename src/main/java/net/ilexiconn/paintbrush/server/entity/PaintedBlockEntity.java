@@ -22,10 +22,8 @@ public class PaintedBlockEntity extends Entity {
     }
 
     public void addPaint(Paint paint) {
-        for (Paint p : this.paintList) {
-            if (p.equals(paint)) {
-                return;
-            }
+        if (this.paintList.contains(paint)) {
+            return;
         }
         this.paintList.add(paint);
         Paintbrush.networkWrapper.sendToAll(new AddPaintMessage(this, paint));
