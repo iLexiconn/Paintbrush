@@ -22,7 +22,6 @@ public class EventHandlerClient {
     public void onMouseInput(MouseEvent event) {
         EntityPlayer player = mc.thePlayer;
         if (event.dwheel != 0 && player != null && player.isSneaking()) {
-            System.out.println(event.dwheel);
             ItemStack stack = player.getCurrentEquippedItem();
             if (stack != null) {
                 Item item = stack.getItem();
@@ -45,7 +44,7 @@ public class EventHandlerClient {
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         EntityPlayer player = mc.thePlayer;
-        if (player != null) {
+        if (player != null && event.type == RenderGameOverlayEvent.ElementType.HOTBAR) {
             ItemStack stack = player.getCurrentEquippedItem();
             if (stack != null) {
                 Item item = stack.getItem();
@@ -74,7 +73,6 @@ public class EventHandlerClient {
                     }
 
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    GL11.glDisable(GL11.GL_LINE_SMOOTH);
                     GL11.glPopMatrix();
                 }
             }
