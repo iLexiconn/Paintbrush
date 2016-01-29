@@ -9,6 +9,7 @@ import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -42,7 +43,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void onUpdate() {
-        /*if (this.worldObj.isAirBlock(blockX, blockY, blockZ)) {
+        if (this.worldObj.isAirBlock(blockX, blockY, blockZ)) {
             this.setDead();
         } else if (this.paintList.isEmpty()) {
             this.setDead();
@@ -65,7 +66,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         }
         for (Paint paint : toRemove) {
             this.paintList.remove(paint);
-        }*/
+        }
     }
 
     @Override
