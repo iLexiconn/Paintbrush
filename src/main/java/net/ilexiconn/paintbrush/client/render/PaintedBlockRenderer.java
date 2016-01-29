@@ -6,7 +6,9 @@ import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
@@ -18,14 +20,20 @@ public class PaintedBlockRenderer extends RenderEntity {
         if (entity instanceof PaintedBlockEntity) {
             PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
 
+            Minecraft mc = Minecraft.getMinecraft();
+
+            mc.entityRenderer.disableLightmap(partialTicks);
+            RenderHelper.disableStandardItemLighting();
+
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
             for (Paint paint : paintedBlockEntity.paintList) {
                 GL11.glPushMatrix();
                 Tessellator tessellator = Tessellator.instance;
                 tessellator.startDrawingQuads();
-                int hex = getColorCode(paint.color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
+                int hex = getColorCode(paint.color.getFormattingCode(), mc.fontRenderer);
                 int r = (hex & 0xFF0000) >> 16;
                 int g = (hex & 0xFF00) >> 8;
                 int b = (hex & 0xFF);
