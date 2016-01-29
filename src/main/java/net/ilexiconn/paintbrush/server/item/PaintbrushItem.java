@@ -156,13 +156,13 @@ public class PaintbrushItem extends Item {
         EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + (getInkFromDamage(stack) != getMaxDamage() ? color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name") : "-"));
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + getSizeFromDamage(stack));
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + (isStackInfinite(stack) ? "∞" : (getMaxDamage() - getInkFromDamage(stack))));
+        //info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + (isStackInfinite(stack) ? "∞" : (getMaxDamage() - getInkFromDamage(stack))));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
-        items.add(new ItemStack(item, 1, getDamage(0, 0, 1, false)));
+        //items.add(new ItemStack(item, 1, getDamage(0, 0, 1, false)));
         for (int i = 0; i < 16; i++) {
             items.add(new ItemStack(item, 1, getDamage(i, 0, 1, true)));
         }

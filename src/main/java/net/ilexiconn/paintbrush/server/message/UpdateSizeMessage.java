@@ -3,6 +3,7 @@ package net.ilexiconn.paintbrush.server.message;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.ilexiconn.paintbrush.server.item.EraserItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,8 +17,8 @@ public class UpdateSizeMessage extends AbstractMessage<UpdateSizeMessage> {
 
     }
 
-    public UpdateSizeMessage(ItemStack stack) {
-        size = getSizeFromDamage(stack);
+    public UpdateSizeMessage(int size) {
+        this.size = size;
     }
 
     @Override
@@ -30,8 +31,9 @@ public class UpdateSizeMessage extends AbstractMessage<UpdateSizeMessage> {
     public void handleServerMessage(UpdateSizeMessage message, EntityPlayer player) {
         ItemStack stack = player.getCurrentEquippedItem();
         if (stack != null && stack.getItem() instanceof PaintbrushItem) {
-            PaintbrushItem item = (PaintbrushItem) stack.getItem();
-            item.setDamage(stack, getDamage(getColorFromDamage(stack), getInkFromDamage(stack), message.size, isStackInfinite(stack)));
+            stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), message.size, isStackInfinite(stack)));
+        } else if (stack != null && stack.getItem() instanceof EraserItem) {
+            stack.setItemDamage(message.size);
         }
     }
 

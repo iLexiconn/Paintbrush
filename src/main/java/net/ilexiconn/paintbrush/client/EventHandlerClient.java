@@ -4,6 +4,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.Paintbrush;
+import net.ilexiconn.paintbrush.server.item.EraserItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 import net.minecraft.client.Minecraft;
@@ -30,15 +31,24 @@ public class EventHandlerClient {
             if (stack != null) {
                 Item item = stack.getItem();
                 if (item instanceof PaintbrushItem) {
-                    PaintbrushItem paintbrush = (PaintbrushItem) item;
                     int size = getSizeFromDamage(stack);
                     if (event.dwheel > 0 && size < 5) {
                         size += event.dwheel / 120;
                     } else if (event.dwheel < 0 && size > 1) {
                         size += event.dwheel / 120;
                     }
-                    paintbrush.setDamage(stack, getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size, isStackInfinite(stack)));
-                    Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(stack));
+                    stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size, isStackInfinite(stack)));
+                    Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(stack.getItemDamage()));
+                    event.setCanceled(true);
+                } else if (item instanceof EraserItem) {
+                    int size = stack.getItemDamage();
+                    if (event.dwheel > 0 && size < 5) {
+                        size += event.dwheel / 120;
+                    } else if (event.dwheel < 0 && size > 1) {
+                        size += event.dwheel / 120;
+                    }
+                    stack.setItemDamage(size);
+                    Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(size));
                     event.setCanceled(true);
                 }
             }
@@ -71,7 +81,24 @@ public class EventHandlerClient {
                             double rad = Math.toRadians((double) i);
                             int pX = (int) (-Math.sin(rad) * ring);
                             int pY = (int) (Math.cos(rad) * ring);
+                            drawRect(pX, pY, 1, 1);
+                        }
+                    }
 
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+                    GL11.glPopMatrix();
+                } else if (item instanceof EraserItem) {
+                    GL11.glPushMatrix();
+                    GL11.glTranslated(16.0D, 16.0D, 0.0D);
+                    GL11.glScalef(2.0F, 2.0F, 2.0F);
+                    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+                    for (int ring = 0; ring < stack.getItemDamage(); ring++) {
+                        for (int i = 0; i < 360; ++i) {
+                            double rad = Math.toRadians((double) i);
+                            int pX = (int) (-Math.sin(rad) * ring);
+                            int pY = (int) (Math.cos(rad) * ring);
                             drawRect(pX, pY, 1, 1);
                         }
                     }

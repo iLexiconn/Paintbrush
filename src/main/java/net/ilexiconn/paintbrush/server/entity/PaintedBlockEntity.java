@@ -29,11 +29,32 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     public void addPaint(Paint paint) {
-        if (this.paintList.contains(paint)) {
-            return;
+        List<Paint> toRemove = Lists.newArrayList();
+        for (Paint p : this.paintList) {
+            if (p.posX == paint.posX && p.posY == paint.posY && p.facing == paint.facing) {
+                if (p.color == paint.color) {
+                    return;
+                } else {
+                    toRemove.add(paint);
+                }
+            }
         }
+        this.paintList.removeAll(toRemove);
         this.paintList.add(paint);
         Paintbrush.networkWrapper.sendToAll(new AddPaintMessage(this, paint));
+    }
+
+    public void removePaint(int x, int y, EnumFacing facing) {
+        Paint toRemove = null;
+        for (Paint paint : this.paintList) {
+            if (paint.posX == x && paint.posY == y && paint.facing == facing) {
+                toRemove = paint;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            this.paintList.remove(toRemove);
+        }
     }
 
     @Override
@@ -64,9 +85,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
                 toRemove.add(paint);
             }
         }
-        for (Paint paint : toRemove) {
-            this.paintList.remove(paint);
-        }
+        this.paintList.removeAll(toRemove);
     }
 
     @Override
