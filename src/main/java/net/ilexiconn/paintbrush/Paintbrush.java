@@ -14,6 +14,7 @@ import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
 import net.ilexiconn.paintbrush.server.message.UpdatePaintedBlockMessage;
+import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
@@ -28,6 +29,7 @@ public class Paintbrush {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
         AbstractMessage.registerMessage(networkWrapper, UpdatePaintedBlockMessage.class, 0, Side.CLIENT);
         AbstractMessage.registerMessage(networkWrapper, AddPaintMessage.class, 1, Side.CLIENT);
+        AbstractMessage.registerMessage(networkWrapper, UpdateSizeMessage.class, 2, Side.SERVER);
 
         EntityRegistry.registerModEntity(PaintedBlockEntity.class, "paintedBlock", 0, this, 64, 1, true);
         GameRegistry.registerItem(new PaintbrushItem(), "paintbrush");

@@ -3,7 +3,9 @@ package net.ilexiconn.paintbrush.client;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
+import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +15,8 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.lwjgl.opengl.GL11;
+
+import static net.ilexiconn.paintbrush.server.item.PaintbrushItem.*;
 
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
@@ -27,14 +31,14 @@ public class EventHandlerClient {
                 Item item = stack.getItem();
                 if (item instanceof PaintbrushItem) {
                     PaintbrushItem paintbrush = (PaintbrushItem) item;
-                    int size = paintbrush.getSizeFromDamage(stack);
+                    int size = getSizeFromDamage(stack);
                     if (event.dwheel > 0 && size < 5) {
                         size += event.dwheel / 120;
                     } else if (event.dwheel < 0 && size > 1) {
                         size += event.dwheel / 120;
                     }
-                    paintbrush.setDamage(stack, paintbrush.getDamage(paintbrush.getColorFromDamage(stack), paintbrush.getInkFromDamage(stack), size, paintbrush.isStackInfinite(stack)));
-                    //Paintbrush.networkWrapper.sendToServer(new MessageUpdateData(Utils.SIZE, new BrushSize(size), true));
+                    paintbrush.setDamage(stack, getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size, isStackInfinite(stack)));
+                    Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(stack));
                     event.setCanceled(true);
                 }
             }
@@ -50,8 +54,8 @@ public class EventHandlerClient {
                 Item item = stack.getItem();
                 if (item instanceof PaintbrushItem) {
                     PaintbrushItem paintbrush = (PaintbrushItem) item;
-                    int size = paintbrush.getSizeFromDamage(stack);
-                    int color = paintbrush.getColorCode(EnumChatFormatting.values()[paintbrush.getColorFromDamage(stack)].getFormattingCode(), mc.fontRenderer);
+                    int size = getSizeFromDamage(stack);
+                    int color = paintbrush.getColorCode(EnumChatFormatting.values()[getColorFromDamage(stack)].getFormattingCode(), mc.fontRenderer);
                     int b = color & 0xFF;
                     int g = (color >>> 8) & 0xFF;
                     int r = (color >>> 16) & 0xFF;

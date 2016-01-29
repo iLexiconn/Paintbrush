@@ -11,9 +11,11 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraft.entity.Entity;
 
 import java.util.List;
 
@@ -29,23 +31,23 @@ public class PaintbrushItem extends Item {
         setMaxStackSize(1);
     }
 
-    public int getColorFromDamage(ItemStack stack) {
+    public static int getColorFromDamage(ItemStack stack) {
         return stack.getItemDamage() & 0b1111;
     }
 
-    public int getInkFromDamage(ItemStack stack) {
+    public static int getInkFromDamage(ItemStack stack) {
         return (stack.getItemDamage() >>> 4) & 0b111111;
     }
 
-    public int getSizeFromDamage(ItemStack stack) {
+    public static int getSizeFromDamage(ItemStack stack) {
         return (stack.getItemDamage() >>> 10) & 0b111;
     }
 
-    public boolean isStackInfinite(ItemStack stack) {
+    public static boolean isStackInfinite(ItemStack stack) {
         return ((stack.getItemDamage() >>> 13) & 0b1) == 1;
     }
 
-    public int getDamage(int color, int ink, int size, boolean infinite) {
+    public static int getDamage(int color, int ink, int size, boolean infinite) {
         return (color & 0b1111) | (ink << 4) | (size << 10) | (infinite ? 1 << 13 : 0);
     }
 
@@ -131,8 +133,15 @@ public class PaintbrushItem extends Item {
 
             int size = getSizeFromDamage(stack);
 
-            Paint paint = new Paint(facing, offsetX, offsetY, color);
-            paintedBlock.addPaint(paint);
+            for (int ring = 0; ring < size; ring++) {
+                for (int i = 0; i < 360; ++i) {
+                    double rad = Math.toRadians((double) i);
+                    int pX = (int) (-Math.sin(rad) * ring);
+                    int pY = (int) (Math.cos(rad) * ring);
+                    Paint paint = new Paint(facing, offsetX + pX, offsetY + pY, color);
+                    paintedBlock.addPaint(paint);
+                }
+            }
         }
 
         return false;
