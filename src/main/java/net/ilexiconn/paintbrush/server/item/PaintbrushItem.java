@@ -92,25 +92,6 @@ public class PaintbrushItem extends Item {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
-            PaintedBlockEntity paintedBlock = null;
-            for (Object entity : world.loadedEntityList) {
-                if (entity instanceof PaintedBlockEntity) {
-                    PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                    if ((int) paintedBlockEntity.posX == x && (int) paintedBlockEntity.posY == y && (int) paintedBlockEntity.posZ == z) {
-                        paintedBlock = paintedBlockEntity;
-                        break;
-                    }
-                }
-            }
-            if (paintedBlock == null) {
-                System.out.println("Entity is null, creating new one...");
-                paintedBlock = new PaintedBlockEntity(world);
-                paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
-                world.spawnEntityInWorld(paintedBlock);
-            }
-
-            EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-
             int pixelX = (int) (hitX * 16);
             int pixelY = (int) (hitY * 16);
             int pixelZ = (int) (hitZ * 16);
@@ -136,9 +117,64 @@ public class PaintbrushItem extends Item {
             for (int ring = 0; ring < size; ring++) {
                 for (int i = 0; i < 360; ++i) {
                     double rad = Math.toRadians((double) i);
-                    int pX = (int) (-Math.sin(rad) * ring);
-                    int pY = (int) (Math.cos(rad) * ring);
-                    Paint paint = new Paint(facing, offsetX + pX, offsetY + pY, color);
+                    int pX = offsetX + (int) (-Math.sin(rad) * ring);
+                    int pY = offsetY + (int) (Math.cos(rad) * ring);
+
+                    int blockX = x;
+                    int blockY = y;
+                    int blockZ = z;
+
+                    int xChange = 0;
+                    int yChange = 0;
+
+                    if (pX < 0) {
+                        xChange--;
+                    } else if (pX > 16) {
+                        xChange++;
+                    }
+
+                    if (pY < 0) {
+                        yChange--;
+                    } else if (pY > 16) {
+                        yChange++;
+                    }
+
+                    if (facing == EnumFacing.DOWN || facing == EnumFacing.UP || facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+                        blockX += xChange;
+                    } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+                        blockZ += xChange;
+                    }
+
+                    if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+                        blockZ += yChange;
+                    } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH || facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+                        blockY += yChange;
+                    }
+
+                    pixelX = pixelX % 16;
+                    pixelY = pixelY % 16;
+                    pixelZ = pixelZ % 16;
+
+                    PaintedBlockEntity paintedBlock = null;
+                    for (Object entity : world.loadedEntityList) {
+                        if (entity instanceof PaintedBlockEntity) {
+                            PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
+                            if ((int) paintedBlockEntity.posX == blockX && (int) paintedBlockEntity.posY == blockY && (int) paintedBlockEntity.posZ == blockZ) {
+                                paintedBlock = paintedBlockEntity;
+                                break;
+                            }
+                        }
+                    }
+                    if (paintedBlock == null) {
+                        System.out.println("Entity is null, creating new one...");
+                        paintedBlock = new PaintedBlockEntity(world);
+                        paintedBlock.setPositionAndRotation(blockX + 0.5F, blockY, blockZ + 0.5F, 0, 0);
+                        world.spawnEntityInWorld(paintedBlock);
+                    }
+
+                    EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
+
+                    Paint paint = new Paint(facing, pX, pY, color);
                     paintedBlock.addPaint(paint);
                 }
             }
