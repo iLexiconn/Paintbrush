@@ -37,7 +37,7 @@ public class PaintedBlockRenderer extends RenderEntity {
                 int g = (hex & 0xFF00) >> 8;
                 int b = (hex & 0xFF);
 
-                GL11.glTranslated(posX - 0.5, posY, posZ - 0.5);
+                GL11.glTranslated(posX - 0.5F, posY, posZ - 0.5F);
 
                 double px;
                 double py;

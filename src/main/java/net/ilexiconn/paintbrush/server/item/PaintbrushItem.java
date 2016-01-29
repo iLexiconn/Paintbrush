@@ -96,7 +96,7 @@ public class PaintbrushItem extends Item {
             for (Object entity : world.loadedEntityList) {
                 if (entity instanceof PaintedBlockEntity) {
                     PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                    if ((int) paintedBlockEntity.posX == x && (int) paintedBlockEntity.posY == y && (int) paintedBlockEntity.posZ == z) {
+                    if (paintedBlockEntity.blockX == x && paintedBlockEntity.blockY == y && paintedBlockEntity.blockZ == z) {
                         paintedBlock = paintedBlockEntity;
                         break;
                     }
@@ -105,6 +105,9 @@ public class PaintbrushItem extends Item {
             if (paintedBlock == null) {
                 System.out.println("Entity == null!");
                 paintedBlock = new PaintedBlockEntity(world);
+                paintedBlock.blockX = x;
+                paintedBlock.blockY = y;
+                paintedBlock.blockZ = z;
                 paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
                 world.spawnEntityInWorld(paintedBlock);
             }

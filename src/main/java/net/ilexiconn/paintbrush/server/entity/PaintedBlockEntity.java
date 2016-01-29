@@ -1,7 +1,6 @@
 package net.ilexiconn.paintbrush.server.entity;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.Paintbrush;
@@ -10,7 +9,6 @@ import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -18,6 +16,9 @@ import java.util.List;
 
 public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawnData {
     public List<Paint> paintList = Lists.newArrayList();
+    public int blockX;
+    public int blockY;
+    public int blockZ;
 
     public PaintedBlockEntity(World world) {
         super(world);
@@ -41,35 +42,40 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void onUpdate() {
-        if (this.worldObj.isAirBlock((int) posX, (int) posY, (int) posZ)) {
+        /*if (this.worldObj.isAirBlock(blockX, blockY, blockZ)) {
+            this.setDead();
+        } else if (this.paintList.isEmpty()) {
             this.setDead();
         }
         List<Paint> toRemove = Lists.newArrayList();
         for (Paint paint : paintList) {
-            if (!worldObj.isAirBlock((int) this.posX, (int) this.posY + 1, (int) this.posZ) && paint.facing == EnumFacing.UP) {
+            if (!worldObj.isAirBlock(blockX, blockY + 1, blockZ) && paint.facing == EnumFacing.UP) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock((int) this.posX, (int) this.posY - 1, (int) this.posZ) && paint.facing == EnumFacing.DOWN) {
+            } else if (!worldObj.isAirBlock(blockX, blockY - 1, blockZ) && paint.facing == EnumFacing.DOWN) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock((int) this.posX + 1, (int) this.posY, (int) this.posZ) && paint.facing == EnumFacing.WEST) {
+            } else if (!worldObj.isAirBlock(blockX + 1, blockY, blockZ) && paint.facing == EnumFacing.WEST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock((int) this.posX - 1, (int) this.posY, (int) this.posZ) && paint.facing == EnumFacing.EAST) {
+            } else if (!worldObj.isAirBlock(blockX - 1, blockY, blockZ) && paint.facing == EnumFacing.EAST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock((int) this.posX, (int) this.posY, (int) this.posZ - 1) && paint.facing == EnumFacing.NORTH) {
+            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ - 1) && paint.facing == EnumFacing.NORTH) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock((int) this.posX, (int) this.posY, (int) this.posZ + 1) && paint.facing == EnumFacing.SOUTH) {
+            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ + 1) && paint.facing == EnumFacing.SOUTH) {
                 toRemove.add(paint);
             }
         }
         for (Paint paint : toRemove) {
             this.paintList.remove(paint);
-        }
+        }*/
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
+        this.blockX = compound.getInteger("BlockX");
+        this.blockY = compound.getInteger("BlockY");
+        this.blockZ = compound.getInteger("BlockZ");
         this.paintList = Lists.newArrayList();
         int size = compound.getInteger("Size");
-        NBTTagList list = compound.getTagList("Size", Constants.NBT.TAG_COMPOUND);
+        NBTTagList list = compound.getTagList("Paint", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < size; i++) {
             NBTTagCompound tag = list.getCompoundTagAt(i);
             Paint paint = Paint.readFromNBT(tag);
@@ -79,7 +85,10 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        compound.setInteger("Size", paintList.size());
+        compound.setInteger("BlockX", this.blockX);
+        compound.setInteger("BlockY", this.blockY);
+        compound.setInteger("BlockZ", this.blockZ);
+        compound.setInteger("Size", this.paintList.size());
         NBTTagList list = new NBTTagList();
         for (Paint paint : this.paintList) {
             NBTTagCompound tag = new NBTTagCompound();
@@ -96,7 +105,9 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void writeSpawnData(ByteBuf buf) {
-        System.out.println("Writing spawn data on " + FMLCommonHandler.instance().getEffectiveSide() + " side");
+        buf.writeInt(this.blockX);
+        buf.writeInt(this.blockY);
+        buf.writeInt(this.blockZ);
         buf.writeInt(this.paintList.size());
         for (Paint paint : this.paintList) {
             paint.encode(buf);
@@ -105,7 +116,9 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void readSpawnData(ByteBuf buf) {
-        System.out.println("Reading spawn data on " + FMLCommonHandler.instance().getEffectiveSide() + " side");
+        this.blockX = buf.readInt();
+        this.blockY = buf.readInt();
+        this.blockZ = buf.readInt();
         this.paintList = Lists.newArrayList();
         int paintListSize = buf.readInt();
         for (int i = 0; i < paintListSize; i++) {
