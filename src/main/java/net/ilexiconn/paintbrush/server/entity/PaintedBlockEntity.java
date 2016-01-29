@@ -1,9 +1,11 @@
 package net.ilexiconn.paintbrush.server.entity;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
-import net.ilexiconn.paintbrush.server.message.UpdatePaintedBlockMessage;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +16,7 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 
-public class PaintedBlockEntity extends Entity {
+public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawnData {
     public List<Paint> paintList = Lists.newArrayList();
 
     public PaintedBlockEntity(World world) {
@@ -73,9 +75,6 @@ public class PaintedBlockEntity extends Entity {
             Paint paint = Paint.readFromNBT(tag);
             this.paintList.add(paint);
         }
-        if (!this.paintList.isEmpty()) {
-            Paintbrush.networkWrapper.sendToAll(new UpdatePaintedBlockMessage(this, this.paintList));
-        }
     }
 
     @Override
@@ -93,5 +92,25 @@ public class PaintedBlockEntity extends Entity {
     @Override
     public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
 
+    }
+
+    @Override
+    public void writeSpawnData(ByteBuf buf) {
+        System.out.println("Writing spawn data on " + FMLCommonHandler.instance().getEffectiveSide() + " side");
+        buf.writeInt(this.paintList.size());
+        for (Paint paint : this.paintList) {
+            paint.encode(buf);
+        }
+    }
+
+    @Override
+    public void readSpawnData(ByteBuf buf) {
+        System.out.println("Reading spawn data on " + FMLCommonHandler.instance().getEffectiveSide() + " side");
+        this.paintList = Lists.newArrayList();
+        int paintListSize = buf.readInt();
+        for (int i = 0; i < paintListSize; i++) {
+            Paint paint = Paint.decode(buf);
+            this.paintList.add(paint);
+        }
     }
 }
