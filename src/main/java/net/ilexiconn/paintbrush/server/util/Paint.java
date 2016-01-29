@@ -35,15 +35,15 @@ public class Paint {
 
     public static Paint decode(ByteBuf buf) {
         int data = buf.readInt();
-        EnumFacing facing = EnumFacing.values()[data & 0B11];
-        int posX = (data >>> 2) & 0B1111;
-        int posY = (data >>> 6) & 0B1111;
-        EnumChatFormatting color = EnumChatFormatting.values()[(data >>> 10) & 0B1111];
+        EnumFacing facing = EnumFacing.values()[data & 0B111];
+        int posX = (data >>> 3) & 0B1111;
+        int posY = (data >>> 7) & 0B1111;
+        EnumChatFormatting color = EnumChatFormatting.values()[(data >>> 11) & 0B1111];
         return new Paint(facing, posX, posY, color);
     }
 
     public void encode(ByteBuf buf) {
-        buf.writeInt(((facing.ordinal() & 0B11) | ((posX & 0B1111) << 2) | ((posY & 0B1111) << 6) | ((color.ordinal() & 0B1111) << 10)));
+        buf.writeInt(((facing.ordinal() & 0B111) | ((posX & 0B1111) << 3) | ((posY & 0B1111) << 7) | ((color.ordinal() & 0B1111) << 11)));
     }
 
     @Override

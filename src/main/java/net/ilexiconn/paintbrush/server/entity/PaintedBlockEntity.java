@@ -19,6 +19,7 @@ public class PaintedBlockEntity extends Entity {
 
     public PaintedBlockEntity(World world) {
         super(world);
+        this.setSize(1, 1);
     }
 
     public void addPaint(Paint paint) {
