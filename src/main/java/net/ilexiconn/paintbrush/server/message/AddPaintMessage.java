@@ -26,7 +26,6 @@ public class AddPaintMessage extends AbstractMessage<AddPaintMessage> {
     public void handleClientMessage(AddPaintMessage message, EntityPlayer player) {
         Entity entity = player.worldObj.getEntityByID(message.entityID);
         if (entity != null && entity instanceof PaintedBlockEntity) {
-            System.out.println("Received packet on CLIENT size with color " + message.paint.color.name());
             PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
             paintedBlockEntity.paintList.add(message.paint);
         }

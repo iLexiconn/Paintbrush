@@ -103,7 +103,7 @@ public class PaintbrushItem extends Item {
                 }
             }
             if (paintedBlock == null) {
-                System.out.println("Entity is null, creating new one...");
+                System.out.println("Entity == null!");
                 paintedBlock = new PaintedBlockEntity(world);
                 paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
                 world.spawnEntityInWorld(paintedBlock);

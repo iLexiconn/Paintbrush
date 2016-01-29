@@ -20,7 +20,7 @@ import static net.ilexiconn.paintbrush.server.item.PaintbrushItem.*;
 
 @SideOnly(Side.CLIENT)
 public class EventHandlerClient {
-    public Minecraft mc = Minecraft.getMinecraft();
+    private Minecraft mc = Minecraft.getMinecraft();
 
     @SubscribeEvent
     public void onMouseInput(MouseEvent event) {

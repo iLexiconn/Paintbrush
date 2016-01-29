@@ -6,7 +6,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.List;
@@ -27,12 +26,7 @@ public class UpdatePaintedBlockMessage extends AbstractMessage<UpdatePaintedBloc
     @Override
     @SideOnly(Side.CLIENT)
     public void handleClientMessage(UpdatePaintedBlockMessage message, EntityPlayer player) {
-        Entity entity = player.worldObj.getEntityByID(message.entityID);
-        if (entity != null && entity instanceof PaintedBlockEntity) {
-            System.out.println("Received packet on CLIENT size with size " + message.paintList.size());
-            PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-            paintedBlockEntity.paintList = message.paintList;
-        }
+        //Do stuff
     }
 
     @Override

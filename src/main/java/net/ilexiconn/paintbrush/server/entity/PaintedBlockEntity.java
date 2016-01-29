@@ -1,7 +1,6 @@
 package net.ilexiconn.paintbrush.server.entity;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
 import net.ilexiconn.paintbrush.server.message.UpdatePaintedBlockMessage;
@@ -9,6 +8,7 @@ import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -34,12 +34,37 @@ public class PaintedBlockEntity extends Entity {
 
     @Override
     protected void entityInit() {
-        System.out.println("Initializing entity on " + FMLCommonHandler.instance().getEffectiveSide() + " size.");
+
+    }
+
+    @Override
+    public void onUpdate() {
+        if (this.worldObj.isAirBlock((int) posX, (int) posY, (int) posZ)) {
+            this.setDead();
+        }
+        List<Paint> toRemove = Lists.newArrayList();
+        for (Paint paint : paintList) {
+            if (!worldObj.isAirBlock((int) this.posX, (int) this.posY + 1, (int) this.posZ) && paint.facing == EnumFacing.UP) {
+                toRemove.add(paint);
+            } else if (!worldObj.isAirBlock((int) this.posX, (int) this.posY - 1, (int) this.posZ) && paint.facing == EnumFacing.DOWN) {
+                toRemove.add(paint);
+            } else if (!worldObj.isAirBlock((int) this.posX + 1, (int) this.posY, (int) this.posZ) && paint.facing == EnumFacing.WEST) {
+                toRemove.add(paint);
+            } else if (!worldObj.isAirBlock((int) this.posX - 1, (int) this.posY, (int) this.posZ) && paint.facing == EnumFacing.EAST) {
+                toRemove.add(paint);
+            } else if (!worldObj.isAirBlock((int) this.posX, (int) this.posY, (int) this.posZ - 1) && paint.facing == EnumFacing.NORTH) {
+                toRemove.add(paint);
+            } else if (!worldObj.isAirBlock((int) this.posX, (int) this.posY, (int) this.posZ + 1) && paint.facing == EnumFacing.SOUTH) {
+                toRemove.add(paint);
+            }
+        }
+        for (Paint paint : toRemove) {
+            this.paintList.remove(paint);
+        }
     }
 
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        System.out.println("Reading entity on " + FMLCommonHandler.instance().getEffectiveSide() + " size.");
         this.paintList = Lists.newArrayList();
         int size = compound.getInteger("Size");
         NBTTagList list = compound.getTagList("Size", Constants.NBT.TAG_COMPOUND);
@@ -48,12 +73,13 @@ public class PaintedBlockEntity extends Entity {
             Paint paint = Paint.readFromNBT(tag);
             this.paintList.add(paint);
         }
-        Paintbrush.networkWrapper.sendToAll(new UpdatePaintedBlockMessage(this, this.paintList));
+        if (!this.paintList.isEmpty()) {
+            Paintbrush.networkWrapper.sendToAll(new UpdatePaintedBlockMessage(this, this.paintList));
+        }
     }
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        System.out.println("Writing entity on " + FMLCommonHandler.instance().getEffectiveSide() + " size.");
         compound.setInteger("Size", paintList.size());
         NBTTagList list = new NBTTagList();
         for (Paint paint : this.paintList) {
@@ -64,6 +90,7 @@ public class PaintedBlockEntity extends Entity {
         compound.setTag("Paint", list);
     }
 
+    @Override
     public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
 
     }
