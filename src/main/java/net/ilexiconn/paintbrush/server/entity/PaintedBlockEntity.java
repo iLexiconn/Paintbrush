@@ -19,8 +19,9 @@ public class PaintedBlockEntity extends Entity {
 
     public PaintedBlockEntity(World world) {
         super(world);
-        this.setSize(1, 1);
+        this.setSize(1.0F, 1.0F);
         this.noClip = true;
+        this.isImmuneToFire = true;
     }
 
     public void addPaint(Paint paint) {

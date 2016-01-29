@@ -21,15 +21,8 @@ public class PaintedBlockRenderer extends RenderEntity {
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-            //posX = paintedBlockEntity.lastTickPosX + (paintedBlockEntity.posX - paintedBlockEntity.lastTickPosX) * (double) partialTicks;
-            //posY = paintedBlockEntity.lastTickPosY + (paintedBlockEntity.posY - paintedBlockEntity.lastTickPosY) * (double) partialTicks;
-            //posZ = paintedBlockEntity.lastTickPosZ + (paintedBlockEntity.posZ - paintedBlockEntity.lastTickPosZ) * (double) partialTicks;
-
-            //System.out.println(posX + ", " + posY + ", " + posZ);
             for (Paint paint : paintedBlockEntity.paintList) {
-                //System.out.println(paint);
                 GL11.glPushMatrix();
-                //GL11.glTranslated(-posX, -posY, -posZ);
                 Tessellator tessellator = Tessellator.instance;
                 tessellator.startDrawingQuads();
                 int hex = getColorCode(paint.color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);

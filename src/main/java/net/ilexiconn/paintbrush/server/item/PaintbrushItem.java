@@ -92,13 +92,15 @@ public class PaintbrushItem extends Item {
             PaintedBlockEntity paintedBlock = null;
             List<PaintedBlockEntity> paintedBlockList = world.getEntitiesWithinAABB(PaintedBlockEntity.class, AxisAlignedBB.getBoundingBox(x - 1.0F, y - 1.0F, z - 1.0F, x + 1.0F, y + 1.0F, z + 1.0F).expand(2.0F, 2.0F, 2.0F));
             for (PaintedBlockEntity entity : paintedBlockList) {
-                if (entity.posX == x && entity.posY == y && entity.posZ == z) {
+                System.out.println("[" + (int) Math.floor(entity.posX) + ", " + x + "], [" + (int) entity.posY + ", " + y + "], [" + (int) entity.posY + ", " + y + "]");
+                if ((int) entity.posX == x && (int) entity.posY == y && (int) entity.posZ == z) {
                     paintedBlock = entity;
                 }
             }
             if (paintedBlock == null) {
+                System.out.println("Entity is null, creating new one...");
                 paintedBlock = new PaintedBlockEntity(world);
-                paintedBlock.setPositionAndRotation(x + 0.5, y, z + 0.5, 0, 0);
+                paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
                 world.spawnEntityInWorld(paintedBlock);
             }
 
