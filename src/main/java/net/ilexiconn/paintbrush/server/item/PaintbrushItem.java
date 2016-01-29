@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
+import net.minecraft.entity.Entity;
 
 import java.util.List;
 
@@ -90,11 +91,13 @@ public class PaintbrushItem extends Item {
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             PaintedBlockEntity paintedBlock = null;
-            List<PaintedBlockEntity> paintedBlockList = world.getEntitiesWithinAABB(PaintedBlockEntity.class, AxisAlignedBB.getBoundingBox(x - 1.0F, y - 1.0F, z - 1.0F, x + 1.0F, y + 1.0F, z + 1.0F).expand(2.0F, 2.0F, 2.0F));
-            for (PaintedBlockEntity entity : paintedBlockList) {
-                System.out.println("[" + (int) Math.floor(entity.posX) + ", " + x + "], [" + (int) entity.posY + ", " + y + "], [" + (int) entity.posY + ", " + y + "]");
-                if ((int) entity.posX == x && (int) entity.posY == y && (int) entity.posZ == z) {
-                    paintedBlock = entity;
+            for (Object entity : world.loadedEntityList) {
+                if (entity instanceof PaintedBlockEntity) {
+                    PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
+                    if ((int) paintedBlockEntity.posX == x && (int) paintedBlockEntity.posY == y && (int) paintedBlockEntity.posZ == z) {
+                        paintedBlock = paintedBlockEntity;
+                        break;
+                    }
                 }
             }
             if (paintedBlock == null) {
