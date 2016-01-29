@@ -20,6 +20,7 @@ public class PaintedBlockEntity extends Entity {
     public PaintedBlockEntity(World world) {
         super(world);
         this.setSize(1, 1);
+        this.noClip = true;
     }
 
     public void addPaint(Paint paint) {
@@ -60,5 +61,9 @@ public class PaintedBlockEntity extends Entity {
             list.appendTag(tag);
         }
         compound.setTag("Paint", list);
+    }
+
+    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
+
     }
 }
