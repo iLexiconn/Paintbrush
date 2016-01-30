@@ -28,9 +28,7 @@ public class UpdateSizeMessage extends AbstractMessage<UpdateSizeMessage> {
     @Override
     public void handleServerMessage(UpdateSizeMessage message, EntityPlayer player) {
         ItemStack stack = player.getCurrentEquippedItem();
-        if (stack != null && stack.getItem() instanceof PaintbrushItem) {
-            stack.setItemDamage(message.size);
-        } else if (stack != null && stack.getItem() instanceof PaintScraperItem) {
+        if (stack != null) {
             stack.setItemDamage(message.size);
         }
     }

@@ -92,63 +92,116 @@ public class PaintbrushItem extends Item {
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
-            PaintedBlockEntity paintedBlock = null;
-            for (Object entity : world.loadedEntityList) {
-                if (entity instanceof PaintedBlockEntity) {
-                    PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                    if (paintedBlockEntity.blockX == x && paintedBlockEntity.blockY == y && paintedBlockEntity.blockZ == z) {
-                        paintedBlock = paintedBlockEntity;
-                        break;
-                    }
-                }
-            }
-            if (paintedBlock == null) {
-                System.out.println("Entity == null!");
-                paintedBlock = new PaintedBlockEntity(world);
-                paintedBlock.blockX = x;
-                paintedBlock.blockY = y;
-                paintedBlock.blockZ = z;
-                paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
-                world.spawnEntityInWorld(paintedBlock);
-            }
-
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
 
-            int pixelX = (int) (hitX * 16);
-            int pixelY = (int) (hitY * 16);
-            int pixelZ = (int) (hitZ * 16);
-
-            int offsetX = 0;
-            int offsetY = 0;
-
             EnumFacing facing = EnumFacing.values()[face];
-
-            if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-                offsetX = pixelX;
-                offsetY = pixelZ;
-            } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-                offsetX = pixelX;
-                offsetY = pixelY;
-            } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
-                offsetX = pixelZ;
-                offsetY = pixelY;
-            }
 
             int size = getSizeFromDamage(stack);
 
             for (int ring = 0; ring < size; ring++) {
                 for (int i = 0; i < 360; ++i) {
                     double rad = Math.toRadians((double) i);
-                    int pX = Math.min(Math.max(0, offsetX + (int) (-Math.sin(rad) * ring)), 15);
-                    int pY = Math.min(Math.max(0, offsetY + (int) (Math.cos(rad) * ring)), 15);
+                    int pX = (int) (-Math.sin(rad) * ring);
+                    int pY = (int) (Math.cos(rad) * ring);
 
-                    Paint paint = new Paint(facing, pX, pY, color);
-                    paintedBlock.addPaint(paint);
+                    addPaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY, color);
                 }
             }
         }
 
         return false;
+    }
+
+    private void addPaint(World world, EnumFacing facing, float hitX, float hitY, float hitZ, int blockX, int blockY, int blockZ, int paintX, int paintY, EnumChatFormatting color) {
+        int blockPaintPosX = (int) (hitX * 16);
+        int blockPaintPosY = (int) (hitY * 16);
+        int blockPaintPosZ = (int) (hitZ * 16);
+
+        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+            blockPaintPosX += paintX;
+            blockPaintPosZ += paintY;
+        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            blockPaintPosX += paintX;
+            blockPaintPosY += paintY;
+        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+            blockPaintPosZ += paintX;
+            blockPaintPosY += paintY;
+        }
+
+        int[] offsetsX = offsetPos(blockPaintPosX, blockX);
+        int[] offsetsY = offsetPos(blockPaintPosY, blockY);
+        int[] offsetsZ = offsetPos(blockPaintPosZ, blockZ);
+
+        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+            blockX = offsetsX[0];
+            blockZ = offsetsZ[0];
+            blockPaintPosX = offsetsX[1];
+            blockPaintPosZ = offsetsZ[1];
+        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            blockX = offsetsX[0];
+            blockY = offsetsY[0];
+            blockPaintPosX = offsetsX[1];
+            blockPaintPosY = offsetsY[1];
+        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+            blockZ = offsetsZ[0];
+            blockY = offsetsY[0];
+            blockPaintPosY = offsetsY[1];
+            blockPaintPosZ = offsetsZ[1];
+        }
+
+        PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
+
+        int offsetX = 0;
+        int offsetY = 0;
+
+        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+            offsetX = blockPaintPosX;
+            offsetY = blockPaintPosZ;
+        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            offsetX = blockPaintPosX;
+            offsetY = blockPaintPosY;
+        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+            offsetX = blockPaintPosZ;
+            offsetY = blockPaintPosY;
+        }
+
+        Paint paint = new Paint(facing, offsetX, offsetY, color);
+        paintedBlock.addPaint(paint);
+    }
+
+    private PaintedBlockEntity getPaintEntity(World world, int x, int y, int z) {
+        PaintedBlockEntity paintedBlock = null;
+        for (Object entity : world.loadedEntityList) {
+            if (entity instanceof PaintedBlockEntity) {
+                PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
+                if (paintedBlockEntity.blockX == x && paintedBlockEntity.blockY == y && paintedBlockEntity.blockZ == z) {
+                    paintedBlock = paintedBlockEntity;
+                    break;
+                }
+            }
+        }
+        if (paintedBlock == null) {
+            paintedBlock = new PaintedBlockEntity(world);
+            paintedBlock.blockX = x;
+            paintedBlock.blockY = y;
+            paintedBlock.blockZ = z;
+            paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
+            world.spawnEntityInWorld(paintedBlock);
+        }
+
+        return paintedBlock;
+    }
+
+    private int[] offsetPos(int paintPos, int blockPos) {
+        if (paintPos > 15) {
+            paintPos = paintPos % 16;
+            blockPos++;
+        } else if (paintPos < 0) {
+            paintPos = paintPos % 16;
+            blockPos--;
+        }
+
+        return new int[] { blockPos, paintPos };
     }
 
     @Override
