@@ -32,20 +32,30 @@ public class EventHandlerClient {
                 Item item = stack.getItem();
                 if (item instanceof PaintbrushItem) {
                     int size = getSizeFromDamage(stack);
-                    if (event.dwheel > 0 && size < 5) {
+                    if (event.dwheel > 0 && size < 7) {
                         size += event.dwheel / 120;
                     } else if (event.dwheel < 0 && size > 1) {
                         size += event.dwheel / 120;
+                    }
+                    if (size > 8) {
+                        size = 8;
+                    } else if (size < 1) {
+                        size = 1;
                     }
                     stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size, isStackInfinite(stack)));
                     Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(stack.getItemDamage()));
                     event.setCanceled(true);
                 } else if (item instanceof PaintScraperItem) {
                     int size = stack.getItemDamage();
-                    if (event.dwheel > 0 && size < 5) {
+                    if (event.dwheel > 0 && size < 7) {
                         size += event.dwheel / 120;
                     } else if (event.dwheel < 0 && size > 1) {
                         size += event.dwheel / 120;
+                    }
+                    if (size > 8) {
+                        size = 8;
+                    } else if (size < 1) {
+                        size = 1;
                     }
                     stack.setItemDamage(size);
                     Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(size));
