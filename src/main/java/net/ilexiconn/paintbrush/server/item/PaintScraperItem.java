@@ -3,10 +3,12 @@ package net.ilexiconn.paintbrush.server.item;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
+import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -29,6 +31,80 @@ public class PaintScraperItem extends Item {
 
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
+        if (!world.isRemote) {
+            EnumFacing facing = EnumFacing.values()[face];
+
+            for (int ring = 0; ring < stack.getItemDamage(); ring++) {
+                for (int i = 0; i < 360; ++i) {
+                    double rad = Math.toRadians((double) i);
+                    int pX = (int) (-Math.sin(rad) * ring);
+                    int pY = (int) (Math.cos(rad) * ring);
+
+                    removePaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void removePaint(World world, EnumFacing facing, float hitX, float hitY, float hitZ, int blockX, int blockY, int blockZ, int paintX, int paintY) {
+        int blockPaintPosX = (int) (hitX * 16);
+        int blockPaintPosY = (int) (hitY * 16);
+        int blockPaintPosZ = (int) (hitZ * 16);
+
+        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+            blockPaintPosX += paintX;
+            blockPaintPosZ += paintY;
+        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            blockPaintPosX += paintX;
+            blockPaintPosY += paintY;
+        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+            blockPaintPosZ += paintX;
+            blockPaintPosY += paintY;
+        }
+
+        int[] offsetsX = offsetPos(blockPaintPosX, blockX);
+        int[] offsetsY = offsetPos(blockPaintPosY, blockY);
+        int[] offsetsZ = offsetPos(blockPaintPosZ, blockZ);
+
+        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+            blockX = offsetsX[0];
+            blockZ = offsetsZ[0];
+            blockPaintPosX = offsetsX[1];
+            blockPaintPosZ = offsetsZ[1];
+        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            blockX = offsetsX[0];
+            blockY = offsetsY[0];
+            blockPaintPosX = offsetsX[1];
+            blockPaintPosY = offsetsY[1];
+        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+            blockZ = offsetsZ[0];
+            blockY = offsetsY[0];
+            blockPaintPosY = offsetsY[1];
+            blockPaintPosZ = offsetsZ[1];
+        }
+
+        PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
+
+        int offsetX = 0;
+        int offsetY = 0;
+
+        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+            offsetX = blockPaintPosX;
+            offsetY = blockPaintPosZ;
+        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+            offsetX = blockPaintPosX;
+            offsetY = blockPaintPosY;
+        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+            offsetX = blockPaintPosZ;
+            offsetY = blockPaintPosY;
+        }
+
+        paintedBlock.removePaint(offsetX, offsetY, facing);
+    }
+
+    private PaintedBlockEntity getPaintEntity(World world, int x, int y, int z) {
         PaintedBlockEntity paintedBlock = null;
         for (Object entity : world.loadedEntityList) {
             if (entity instanceof PaintedBlockEntity) {
@@ -39,39 +115,28 @@ public class PaintScraperItem extends Item {
                 }
             }
         }
-        if (paintedBlock != null) {
-            int pixelX = (int) (hitX * 16);
-            int pixelY = (int) (hitY * 16);
-            int pixelZ = (int) (hitZ * 16);
-
-            int offsetX = 0;
-            int offsetY = 0;
-
-            EnumFacing facing = EnumFacing.values()[face];
-
-            if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-                offsetX = pixelX;
-                offsetY = pixelZ;
-            } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-                offsetX = pixelX;
-                offsetY = pixelY;
-            } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
-                offsetX = pixelZ;
-                offsetY = pixelY;
-            }
-
-            paintedBlock.removePaint(offsetX, offsetY, facing);
-
-            for (int ring = 0; ring < stack.getItemDamage(); ring++) {
-                for (int i = 0; i < 360; ++i) {
-                    double rad = Math.toRadians((double) i);
-                    int pX = (int) (-Math.sin(rad) * ring);
-                    int pY = (int) (Math.cos(rad) * ring);
-                    paintedBlock.removePaint(offsetX + pX, offsetY + pY, facing);
-                }
-            }
+        if (paintedBlock == null) {
+            paintedBlock = new PaintedBlockEntity(world);
+            paintedBlock.blockX = x;
+            paintedBlock.blockY = y;
+            paintedBlock.blockZ = z;
+            paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
+            world.spawnEntityInWorld(paintedBlock);
         }
-        return false;
+
+        return paintedBlock;
+    }
+
+    private int[] offsetPos(int paintPos, int blockPos) {
+        if (paintPos > 15) {
+            paintPos = paintPos % 16;
+            blockPos++;
+        } else if (paintPos < 0) {
+            paintPos = paintPos % 16;
+            blockPos--;
+        }
+
+        return new int[] { blockPos, paintPos };
     }
 
     @Override
