@@ -106,6 +106,9 @@ public class PaintedBlockRenderer extends RenderEntity {
 
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+            mc.entityRenderer.enableLightmap(partialTicks);
+            RenderHelper.enableStandardItemLighting();
         }
     }
 
