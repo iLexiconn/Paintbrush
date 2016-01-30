@@ -139,9 +139,10 @@ public class PaintbrushItem extends Item {
             for (int ring = 0; ring < size; ring++) {
                 for (int i = 0; i < 360; ++i) {
                     double rad = Math.toRadians((double) i);
-                    int pX = (int) (-Math.sin(rad) * ring);
-                    int pY = (int) (Math.cos(rad) * ring);
-                    Paint paint = new Paint(facing, offsetX + pX, offsetY + pY, color);
+                    int pX = Math.min(Math.max(0, offsetX + (int) (-Math.sin(rad) * ring)), 15);
+                    int pY = Math.min(Math.max(0, offsetY + (int) (Math.cos(rad) * ring)), 15);
+
+                    Paint paint = new Paint(facing, pX, pY, color);
                     paintedBlock.addPaint(paint);
                 }
             }
