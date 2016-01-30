@@ -13,11 +13,11 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class EraserItem extends Item {
-    public EraserItem() {
-        setUnlocalizedName("eraser");
+public class PaintScraperItem extends Item {
+    public PaintScraperItem() {
+        setUnlocalizedName("paint_scraper");
         setCreativeTab(CreativeTabs.tabTools);
-        setTextureName("paintbrush:eraser");
+        setTextureName("paintbrush:paint_scraper");
         setMaxStackSize(1);
         setMaxDamage(64);
     }
