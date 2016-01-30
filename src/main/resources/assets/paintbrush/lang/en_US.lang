@@ -1,5 +1,5 @@
 item.paintbrush.name=Paintbrush
-item.eraser.name=Eraser
+item.paint_scraper.name=Paint Scraper
 
 tooltip.paintbrush.color=Color
 tooltip.paintbrush.size=Size

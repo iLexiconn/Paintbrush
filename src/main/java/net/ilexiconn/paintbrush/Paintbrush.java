@@ -10,7 +10,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.ilexiconn.paintbrush.server.ProxyServer;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
-import net.ilexiconn.paintbrush.server.item.EraserItem;
+import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
@@ -32,7 +32,7 @@ public class Paintbrush {
 
         EntityRegistry.registerModEntity(PaintedBlockEntity.class, "paintedBlock", 0, this, 64, 1, true);
         GameRegistry.registerItem(new PaintbrushItem(), "paintbrush");
-        GameRegistry.registerItem(new EraserItem(), "eraser");
+        GameRegistry.registerItem(new PaintScraperItem(), "paint_scraper");
         proxy.init();
     }
 }

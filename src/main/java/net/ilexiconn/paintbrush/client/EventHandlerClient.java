@@ -4,7 +4,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.Paintbrush;
-import net.ilexiconn.paintbrush.server.item.EraserItem;
+import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 import net.minecraft.client.Minecraft;
@@ -40,7 +40,7 @@ public class EventHandlerClient {
                     stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size, isStackInfinite(stack)));
                     Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(stack.getItemDamage()));
                     event.setCanceled(true);
-                } else if (item instanceof EraserItem) {
+                } else if (item instanceof PaintScraperItem) {
                     int size = stack.getItemDamage();
                     if (event.dwheel > 0 && size < 5) {
                         size += event.dwheel / 120;
@@ -87,7 +87,7 @@ public class EventHandlerClient {
 
                     GL11.glEnable(GL11.GL_TEXTURE_2D);
                     GL11.glPopMatrix();
-                } else if (item instanceof EraserItem) {
+                } else if (item instanceof PaintScraperItem) {
                     GL11.glPushMatrix();
                     GL11.glTranslated(16.0D, 16.0D, 0.0D);
                     GL11.glScalef(2.0F, 2.0F, 2.0F);
