@@ -8,8 +8,6 @@ import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
-import static net.ilexiconn.paintbrush.server.item.PaintbrushItem.*;
-
 public class UpdateSizeMessage extends AbstractMessage<UpdateSizeMessage> {
     private int size;
 
@@ -31,7 +29,7 @@ public class UpdateSizeMessage extends AbstractMessage<UpdateSizeMessage> {
     public void handleServerMessage(UpdateSizeMessage message, EntityPlayer player) {
         ItemStack stack = player.getCurrentEquippedItem();
         if (stack != null && stack.getItem() instanceof PaintbrushItem) {
-            stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), message.size, isStackInfinite(stack)));
+            stack.setItemDamage(message.size);
         } else if (stack != null && stack.getItem() instanceof PaintScraperItem) {
             stack.setItemDamage(message.size);
         }
