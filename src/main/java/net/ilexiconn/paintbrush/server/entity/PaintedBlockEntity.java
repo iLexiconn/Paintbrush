@@ -29,12 +29,12 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         this.isImmuneToFire = true;
     }
 
-    public void addPaint(Paint paint) {
+    public boolean addPaint(Paint paint) {
         List<Paint> toRemove = Lists.newArrayList();
         for (Paint p : this.paintList) {
             if (p.posX == paint.posX && p.posY == paint.posY && p.facing == paint.facing) {
                 if (p.color == paint.color) {
-                    return;
+                    return false;
                 } else {
                     toRemove.add(paint);
                 }
@@ -43,6 +43,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         this.paintList.removeAll(toRemove);
         this.paintList.add(paint);
         Paintbrush.networkWrapper.sendToAll(new AddPaintMessage(this, paint));
+        return true;
     }
 
     public void removePaint(int x, int y, EnumFacing facing) {

@@ -50,7 +50,7 @@ public class Paintbrush {
         for (int color = 0; color < 16; color++) {
             EnumChatFormatting chatFormatting = EnumChatFormatting.values()[color];
 
-            int dyeColorIndex = 0;
+            int dyeColorIndex;
 
             for (dyeColorIndex = 0; dyeColorIndex < 16; dyeColorIndex++) {
                 if (nameToID[dyeColorIndex].equalsIgnoreCase(chatFormatting.getFriendlyName())) {
@@ -58,7 +58,11 @@ public class Paintbrush {
                 }
             }
 
-            GameRegistry.addShapedRecipe(new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, 64, 1, false)), "WDW", "SPS", " S ", 'P', Blocks.planks, 'S', Items.stick, 'D', new ItemStack(Items.dye, 1, dyeColorIndex), 'W', Blocks.wool);
+            GameRegistry.addShapedRecipe(new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, 1, 1, false)), "WDW", "SPS", " S ", 'P', Blocks.planks, 'S', Items.stick, 'D', new ItemStack(Items.dye, 1, dyeColorIndex), 'W', Blocks.wool);
+
+            for (int size = 0; size < 7; size++) {
+                GameRegistry.addShapelessRecipe(new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, 1, size, false)), new ItemStack(Items.dye, 1, dyeColorIndex), new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, PaintbrushItem.MAX_INK - 1, size, false)));
+            }
         }
 
         proxy.init();
