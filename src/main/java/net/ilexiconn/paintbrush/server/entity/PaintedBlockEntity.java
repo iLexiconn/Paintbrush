@@ -32,17 +32,11 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     public boolean addPaint(Paint paint) {
-        List<Paint> toRemove = Lists.newArrayList();
         for (Paint p : this.paintList) {
             if (p.posX == paint.posX && p.posY == paint.posY && p.facing == paint.facing) {
-                if (p.color == paint.color) {
-                    return false;
-                } else {
-                    toRemove.add(paint);
-                }
+                return false;
             }
         }
-        this.paintList.removeAll(toRemove);
         this.paintList.add(paint);
         Paintbrush.networkWrapper.sendToAll(new AddPaintMessage(this, paint));
         return true;
