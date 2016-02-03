@@ -3,7 +3,6 @@ item.paint_scraper.name=Paint Scraper
 
 tooltip.paintbrush.color=Color
 tooltip.paintbrush.size=Size
-tooltip.paintbrush.ink=Ink
 
 color.black.name=Black
 color.dark_blue.name=Dark Blue

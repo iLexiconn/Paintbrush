@@ -23,45 +23,28 @@ public class PaintbrushItem extends Item {
     @SideOnly(Side.CLIENT)
     private IIcon colorOverlay;
 
-    public static final int MAX_INK = 256;
-
     public PaintbrushItem() {
         setUnlocalizedName("paintbrush");
         setCreativeTab(CreativeTabs.tabTools);
         setTextureName("paintbrush:paintbrush");
-        setMaxDamage(MAX_INK);
         setMaxStackSize(1);
     }
 
     public static int getColorFromDamage(ItemStack stack) {
-        return stack.getItemDamage() & 0b1111;
-    }
-
-    public static int getInkFromDamage(ItemStack stack) {
-        return (stack.getItemDamage() >>> 4) & 0b11111111;
+        return stack.getItemDamage() & 0B1111;
     }
 
     public static int getSizeFromDamage(ItemStack stack) {
-        return (stack.getItemDamage() >>> 12) & 0b111;
+        return (stack.getItemDamage() >>> 4) & 0B111;
     }
 
-    public static boolean isStackInfinite(ItemStack stack) {
-        return ((stack.getItemDamage() >>> 15) & 0b1) == 1;
-    }
-
-    public static int getDamage(int color, int ink, int size, boolean infinite) {
-        return (color & 0b1111) | (ink << 4) | (size << 12) | (infinite ? 1 << 15 : 0);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public int getDisplayDamage(ItemStack stack) {
-        return getInkFromDamage(stack);
+    public static int getDamage(int color, int size) {
+        return (color & 0B1111) | (size << 4);
     }
 
     @Override
     public boolean showDurabilityBar(ItemStack stack) {
-        return !isStackInfinite(stack);
+        return false;
     }
 
     @SideOnly(Side.CLIENT)
@@ -77,17 +60,13 @@ public class PaintbrushItem extends Item {
 
     @SideOnly(Side.CLIENT)
     public IIcon getIconFromDamageForRenderPass(int damage, int pass) {
-        return pass == 0 || renderPaintOnBrush(damage) ? itemIcon : colorOverlay;
-    }
-
-    private boolean renderPaintOnBrush(int damage) {
-        return ((damage >>> 4) & 0b11111111) >= getMaxDamage() - 1;
+        return pass == 0 ? itemIcon : colorOverlay;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public int getColorFromItemStack(ItemStack stack, int renderPass) {
-        if (renderPass != 0 && getInkFromDamage(stack) != getMaxDamage() && !renderPaintOnBrush(stack.getItemDamage())) {
+        if (renderPass != 0) {
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
             return getColorCode(color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
         } else {
@@ -104,25 +83,14 @@ public class PaintbrushItem extends Item {
 
             int size = getSizeFromDamage(stack);
 
-            int ink = getInkFromDamage(stack);
-
             for (int ring = 0; ring < size; ring++) {
                 for (int i = 0; i < 360; ++i) {
-                    if (ink == MAX_INK - 1) {
-                        break;
-                    }
-
                     double rad = Math.toRadians((double) i);
                     int pX = (int) (-Math.sin(rad) * ring);
                     int pY = (int) (Math.cos(rad) * ring);
-
-                    if (addPaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY, color)) {
-                        ink++;
-                    }
+                    addPaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY, color);
                 }
             }
-
-            stack.setItemDamage(getDamage(getColorFromDamage(stack), Math.min(ink, MAX_INK - 1), getSizeFromDamage(stack), isStackInfinite(stack)));
         }
 
         return false;
@@ -224,17 +192,15 @@ public class PaintbrushItem extends Item {
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean advancedTooltips) {
         EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-        info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + (getInkFromDamage(stack) != getMaxDamage() ? color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name") : "-"));
+        info.add(StatCollector.translateToLocal("tooltip.paintbrush.color") + ": " + color + StatCollector.translateToLocal("color." + color.getFriendlyName() + ".name"));
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + getSizeFromDamage(stack));
-        //info.add(StatCollector.translateToLocal("tooltip.paintbrush.ink") + ": " + (isStackInfinite(stack) ? "∞" : (getMaxDamage() - getInkFromDamage(stack))));
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item item, CreativeTabs tab, List items) {
-        //items.add(new ItemStack(item, 1, getDamage(0, 0, 1, false)));
         for (int i = 0; i < 16; i++) {
-            items.add(new ItemStack(item, 1, getDamage(i, 0, 1, true)));
+            items.add(new ItemStack(item, 1, getDamage(i, 1)));
         }
     }
 

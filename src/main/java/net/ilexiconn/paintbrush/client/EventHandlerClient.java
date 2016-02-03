@@ -42,7 +42,7 @@ public class EventHandlerClient {
                     } else if (size < 1) {
                         size = 1;
                     }
-                    stack.setItemDamage(getDamage(getColorFromDamage(stack), getInkFromDamage(stack), size, isStackInfinite(stack)));
+                    stack.setItemDamage(getDamage(getColorFromDamage(stack), size));
                     Paintbrush.networkWrapper.sendToServer(new UpdateSizeMessage(stack.getItemDamage()));
                     event.setCanceled(true);
                 } else if (item instanceof PaintScraperItem) {

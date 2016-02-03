@@ -16,11 +16,6 @@ import net.ilexiconn.paintbrush.server.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
 import net.ilexiconn.paintbrush.server.message.RemovePaintMessage;
 import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.opencl.CL;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
@@ -46,24 +41,6 @@ public class Paintbrush {
         EntityRegistry.registerModEntity(PaintedBlockEntity.class, "paintedBlock", 0, this, 64, 1, true);
         GameRegistry.registerItem(paintbrush, "paintbrush");
         GameRegistry.registerItem(new PaintScraperItem(), "paint_scraper");
-
-        for (int color = 0; color < 16; color++) {
-            EnumChatFormatting chatFormatting = EnumChatFormatting.values()[color];
-
-            int dyeColorIndex;
-
-            for (dyeColorIndex = 0; dyeColorIndex < 16; dyeColorIndex++) {
-                if (nameToID[dyeColorIndex].equalsIgnoreCase(chatFormatting.getFriendlyName())) {
-                    break;
-                }
-            }
-
-            GameRegistry.addShapedRecipe(new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, 1, 1, false)), "WDW", "SPS", " S ", 'P', Blocks.planks, 'S', Items.stick, 'D', new ItemStack(Items.dye, 1, dyeColorIndex), 'W', Blocks.wool);
-
-            for (int size = 0; size < 7; size++) {
-                GameRegistry.addShapelessRecipe(new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, 1, size, false)), new ItemStack(Items.dye, 1, dyeColorIndex), new ItemStack(paintbrush, 1, PaintbrushItem.getDamage(color, PaintbrushItem.MAX_INK - 1, size, false)));
-            }
-        }
 
         proxy.init();
     }
