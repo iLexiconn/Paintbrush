@@ -2,6 +2,8 @@ package net.ilexiconn.paintbrush.server.entity;
 
 import com.google.common.collect.Lists;
 import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
@@ -57,6 +59,26 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         if (toRemove != null) {
             this.paintList.remove(toRemove);
             Paintbrush.networkWrapper.sendToAll(new RemovePaintMessage(this, toRemove));
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int getBrightnessForFace(EnumFacing facing) {
+        switch (facing) {
+            case NORTH:
+                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY, blockZ - 1, 0);
+            case SOUTH:
+                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY, blockZ + 1, 0);
+            case EAST:
+                return this.worldObj.getLightBrightnessForSkyBlocks(blockX - 1, blockY, blockZ, 0);
+            case WEST:
+                return this.worldObj.getLightBrightnessForSkyBlocks(blockX + 1, blockY, blockZ, 0);
+            case UP:
+                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY + 1, blockZ, 0);
+            case DOWN:
+                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY - 1, blockZ, 0);
+            default:
+                return 0;
         }
     }
 

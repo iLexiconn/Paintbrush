@@ -6,7 +6,7 @@ import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.entity.Entity;
@@ -21,15 +21,18 @@ public class PaintedBlockRenderer extends RenderEntity {
 
             Minecraft mc = Minecraft.getMinecraft();
 
-            mc.entityRenderer.disableLightmap(partialTicks);
-            RenderHelper.disableStandardItemLighting();
-
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
             for (Paint paint : paintedBlockEntity.paintList) {
                 GL11.glPushMatrix();
+
+                int i = paintedBlockEntity.getBrightnessForFace(paint.facing);
+                int j = i % 65536;
+                int k = i / 65536;
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+
                 Tessellator tessellator = Tessellator.instance;
                 tessellator.startDrawingQuads();
                 int hex = getColorCode(paint.color.getFormattingCode(), mc.fontRenderer);
@@ -106,9 +109,6 @@ public class PaintedBlockRenderer extends RenderEntity {
 
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-            mc.entityRenderer.enableLightmap(partialTicks);
-            RenderHelper.enableStandardItemLighting();
         }
     }
 
