@@ -1,21 +1,21 @@
 package net.ilexiconn.paintbrush;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
+import net.ilexiconn.llibrary.common.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.ProxyServer;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
-import net.ilexiconn.paintbrush.server.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
 import net.ilexiconn.paintbrush.server.message.RemovePaintMessage;
 import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION)
 public class Paintbrush {
@@ -26,8 +26,6 @@ public class Paintbrush {
     public static final String VERSION = "0.1.0";
 
     public static PaintbrushItem paintbrush;
-
-    public static final String[] nameToID = new String[] {"black", "red", "dark_green", "brown", "blue", "purple", "cyan", "silver", "gray", "pink", "green", "yellow", "light_blue", "magenta", "gold", "white"};
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {

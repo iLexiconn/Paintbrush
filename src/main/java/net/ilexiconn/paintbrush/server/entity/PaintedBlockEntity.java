@@ -1,9 +1,6 @@
 package net.ilexiconn.paintbrush.server.entity;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.registry.IEntityAdditionalSpawnData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
@@ -12,17 +9,19 @@ import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawnData {
     public List<Paint> paintList = Lists.newArrayList();
-    public int blockX;
-    public int blockY;
-    public int blockZ;
+    public BlockPos blockPos;
 
     public PaintedBlockEntity(World world) {
         super(world);
@@ -60,17 +59,17 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     public int getBrightnessForFace(EnumFacing facing) {
         switch (facing) {
             case NORTH:
-                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY, blockZ - 1, 0);
+                return this.worldObj.getCombinedLight(blockPos.north(), 0);
             case SOUTH:
-                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY, blockZ + 1, 0);
+                return this.worldObj.getCombinedLight(blockPos.south(), 0);
             case EAST:
-                return this.worldObj.getLightBrightnessForSkyBlocks(blockX - 1, blockY, blockZ, 0);
+                return this.worldObj.getCombinedLight(blockPos.east(), 0);
             case WEST:
-                return this.worldObj.getLightBrightnessForSkyBlocks(blockX + 1, blockY, blockZ, 0);
+                return this.worldObj.getCombinedLight(blockPos.west(), 0);
             case UP:
-                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY + 1, blockZ, 0);
+                return this.worldObj.getCombinedLight(blockPos.up(), 0);
             case DOWN:
-                return this.worldObj.getLightBrightnessForSkyBlocks(blockX, blockY - 1, blockZ, 0);
+                return this.worldObj.getCombinedLight(blockPos.down(), 0);
             default:
                 return 0;
         }
@@ -83,24 +82,24 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void onUpdate() {
-        if (this.worldObj.isAirBlock(blockX, blockY, blockZ)) {
+        if (this.worldObj.isAirBlock(blockPos)) {
             this.setDead();
         } else if (this.paintList.isEmpty()) {
             this.setDead();
         }
         List<Paint> toRemove = Lists.newArrayList();
         for (Paint paint : paintList) {
-            if (!worldObj.isAirBlock(blockX, blockY + 1, blockZ) && paint.facing == EnumFacing.UP) {
+            if (!worldObj.isAirBlock(blockPos.up()) && paint.facing == EnumFacing.UP) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY - 1, blockZ) && paint.facing == EnumFacing.DOWN) {
+            } else if (!worldObj.isAirBlock(blockPos.down()) && paint.facing == EnumFacing.DOWN) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX + 1, blockY, blockZ) && paint.facing == EnumFacing.WEST) {
+            } else if (!worldObj.isAirBlock(blockPos.west()) && paint.facing == EnumFacing.WEST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX - 1, blockY, blockZ) && paint.facing == EnumFacing.EAST) {
+            } else if (!worldObj.isAirBlock(blockPos.east()) && paint.facing == EnumFacing.EAST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ - 1) && paint.facing == EnumFacing.NORTH) {
+            } else if (!worldObj.isAirBlock(blockPos.north()) && paint.facing == EnumFacing.NORTH) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ + 1) && paint.facing == EnumFacing.SOUTH) {
+            } else if (!worldObj.isAirBlock(blockPos.south()) && paint.facing == EnumFacing.SOUTH) {
                 toRemove.add(paint);
             }
         }
@@ -108,10 +107,16 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     @Override
+    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
+
+    }
+
+    @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
-        this.blockX = compound.getInteger("BlockX");
-        this.blockY = compound.getInteger("BlockY");
-        this.blockZ = compound.getInteger("BlockZ");
+        int blockX = compound.getInteger("BlockX");
+        int blockY = compound.getInteger("BlockY");
+        int blockZ = compound.getInteger("BlockZ");
+        this.blockPos = new BlockPos(blockX, blockY, blockZ);
         this.paintList = Lists.newArrayList();
         int size = compound.getInteger("Size");
         NBTTagList list = compound.getTagList("Paint", Constants.NBT.TAG_COMPOUND);
@@ -124,9 +129,9 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
-        compound.setInteger("BlockX", this.blockX);
-        compound.setInteger("BlockY", this.blockY);
-        compound.setInteger("BlockZ", this.blockZ);
+        compound.setInteger("BlockX", this.blockPos.getX());
+        compound.setInteger("BlockY", this.blockPos.getY());
+        compound.setInteger("BlockZ", this.blockPos.getZ());
         compound.setInteger("Size", this.paintList.size());
         NBTTagList list = new NBTTagList();
         for (Paint paint : this.paintList) {
@@ -138,15 +143,10 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     @Override
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
-
-    }
-
-    @Override
     public void writeSpawnData(ByteBuf buf) {
-        buf.writeInt(this.blockX);
-        buf.writeInt(this.blockY);
-        buf.writeInt(this.blockZ);
+        buf.writeInt(this.blockPos.getX());
+        buf.writeInt(this.blockPos.getY());
+        buf.writeInt(this.blockPos.getZ());
         buf.writeInt(this.paintList.size());
         for (Paint paint : this.paintList) {
             paint.encode(buf);
@@ -155,9 +155,10 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void readSpawnData(ByteBuf buf) {
-        this.blockX = buf.readInt();
-        this.blockY = buf.readInt();
-        this.blockZ = buf.readInt();
+        int blockX = buf.readInt();
+        int blockY = buf.readInt();
+        int blockZ = buf.readInt();
+        this.blockPos = new BlockPos(blockX, blockY, blockZ);
         this.paintList = Lists.newArrayList();
         int paintListSize = buf.readInt();
         for (int i = 0; i < paintListSize; i++) {

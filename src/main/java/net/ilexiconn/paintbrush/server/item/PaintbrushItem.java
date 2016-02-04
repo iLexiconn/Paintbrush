@@ -1,32 +1,27 @@
 package net.ilexiconn.paintbrush.server.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 public class PaintbrushItem extends Item {
-    @SideOnly(Side.CLIENT)
-    private IIcon colorOverlay;
-
     public PaintbrushItem() {
         setUnlocalizedName("paintbrush");
         setCreativeTab(CreativeTabs.tabTools);
-        setTextureName("paintbrush:paintbrush");
         setMaxStackSize(1);
     }
 
@@ -47,39 +42,21 @@ public class PaintbrushItem extends Item {
         return false;
     }
 
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IIconRegister iconRegister) {
-        super.registerIcons(iconRegister);
-        this.colorOverlay = iconRegister.registerIcon("paintbrush:paintbrush_overlay");
-    }
-
-    @SideOnly(Side.CLIENT)
-    public boolean requiresMultipleRenderPasses() {
-        return true;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public IIcon getIconFromDamageForRenderPass(int damage, int pass) {
-        return pass == 0 ? itemIcon : colorOverlay;
-    }
-
     @Override
     @SideOnly(Side.CLIENT)
     public int getColorFromItemStack(ItemStack stack, int renderPass) {
         if (renderPass != 0) {
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-            return getColorCode(color.getFormattingCode(), Minecraft.getMinecraft().fontRenderer);
+            return getColorCode(color.formattingCode, Minecraft.getMinecraft().fontRendererObj);
         } else {
             return 0xFFFFFF;
         }
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-
-            EnumFacing facing = EnumFacing.values()[face];
 
             int size = getSizeFromDamage(stack);
 
@@ -88,7 +65,7 @@ public class PaintbrushItem extends Item {
                     double rad = Math.toRadians((double) i);
                     int pX = (int) (-Math.sin(rad) * ring);
                     int pY = (int) (Math.cos(rad) * ring);
-                    addPaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY, color);
+                    addPaint(world, side, hitX, hitY, hitZ, pos.getX(), pos.getY(), pos.getZ(), pX, pY, color);
                 }
             }
         }
@@ -133,7 +110,7 @@ public class PaintbrushItem extends Item {
             blockPaintPosZ = offsetsZ[1];
         }
 
-        PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
+        PaintedBlockEntity paintedBlock = getPaintEntity(world, new BlockPos(blockX, blockY, blockZ));
 
         int offsetX = 0;
         int offsetY = 0;
@@ -153,12 +130,12 @@ public class PaintbrushItem extends Item {
         return paintedBlock.addPaint(paint);
     }
 
-    private PaintedBlockEntity getPaintEntity(World world, int x, int y, int z) {
+    private PaintedBlockEntity getPaintEntity(World world, BlockPos pos) {
         PaintedBlockEntity paintedBlock = null;
         for (Object entity : world.loadedEntityList) {
             if (entity instanceof PaintedBlockEntity) {
                 PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                if (paintedBlockEntity.blockX == x && paintedBlockEntity.blockY == y && paintedBlockEntity.blockZ == z) {
+                if (paintedBlockEntity.blockPos.equals(pos)) {
                     paintedBlock = paintedBlockEntity;
                     break;
                 }
@@ -166,10 +143,8 @@ public class PaintbrushItem extends Item {
         }
         if (paintedBlock == null) {
             paintedBlock = new PaintedBlockEntity(world);
-            paintedBlock.blockX = x;
-            paintedBlock.blockY = y;
-            paintedBlock.blockZ = z;
-            paintedBlock.setPositionAndRotation(x + 0.5F, y, z + 0.5F, 0, 0);
+            paintedBlock.blockPos = pos;
+            paintedBlock.moveToBlockPosAndAngles(pos, 0.0F, 0.0F);
             world.spawnEntityInWorld(paintedBlock);
         }
 

@@ -1,20 +1,23 @@
 package net.ilexiconn.paintbrush.client;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.Paintbrush;
 import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
 import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import static net.ilexiconn.paintbrush.server.item.PaintbrushItem.*;
@@ -73,9 +76,8 @@ public class EventHandlerClient {
             if (stack != null) {
                 Item item = stack.getItem();
                 if (item instanceof PaintbrushItem) {
-                    PaintbrushItem paintbrush = (PaintbrushItem) item;
                     int size = getSizeFromDamage(stack);
-                    int color = paintbrush.getColorCode(EnumChatFormatting.values()[getColorFromDamage(stack)].getFormattingCode(), mc.fontRenderer);
+                    int color = mc.fontRendererObj.getColorCode(EnumChatFormatting.values()[getColorFromDamage(stack)].formattingCode);
                     int b = color & 0xFF;
                     int g = (color >>> 8) & 0xFF;
                     int r = (color >>> 16) & 0xFF;
@@ -120,18 +122,19 @@ public class EventHandlerClient {
         }
     }
 
-    public void drawRect(int x, int y, int width, int height) {
-        float widthScale = 1.0F / width;
-        float heightScale = 1.0F / height;
-
-        double zLevel = 1.0;
-
-        Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double) (x), (double) (y + height), zLevel, (double) ((float) (0) * widthScale), (double) ((float) (height) * heightScale));
-        tessellator.addVertexWithUV((double) (x + width), (double) (y + height), zLevel, (double) ((float) (width) * widthScale), (double) ((float) (height) * heightScale));
-        tessellator.addVertexWithUV((double) (x + width), (double) (y), zLevel, (double) ((float) (width) * widthScale), (double) ((float) (0) * heightScale));
-        tessellator.addVertexWithUV((double) (x), (double) (y), zLevel, (double) ((float) (0) * widthScale), (double) ((float) (0) * heightScale));
+    public static void drawRect(int left, int top, int right, int bottom) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldrenderer.pos((double) left, (double) bottom, 0.0D).endVertex();
+        worldrenderer.pos((double) right, (double) bottom, 0.0D).endVertex();
+        worldrenderer.pos((double) right, (double) top, 0.0D).endVertex();
+        worldrenderer.pos((double) left, (double) top, 0.0D).endVertex();
         tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 }

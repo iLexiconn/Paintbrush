@@ -1,12 +1,13 @@
 package net.ilexiconn.paintbrush.server.message;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
+import net.ilexiconn.llibrary.common.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class AddPaintMessage extends AbstractMessage<AddPaintMessage> {
     private int entityID;

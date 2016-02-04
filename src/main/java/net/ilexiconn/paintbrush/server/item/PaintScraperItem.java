@@ -1,15 +1,16 @@
 package net.ilexiconn.paintbrush.server.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -17,7 +18,6 @@ public class PaintScraperItem extends Item {
     public PaintScraperItem() {
         setUnlocalizedName("paint_scraper");
         setCreativeTab(CreativeTabs.tabTools);
-        setTextureName("paintbrush:paint_scraper");
         setMaxStackSize(1);
         setMaxDamage(64);
     }
@@ -28,17 +28,15 @@ public class PaintScraperItem extends Item {
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int face, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
-            EnumFacing facing = EnumFacing.values()[face];
-
             for (int ring = 0; ring < stack.getItemDamage(); ring++) {
                 for (int i = 0; i < 360; ++i) {
                     double rad = Math.toRadians((double) i);
                     int pX = (int) (-Math.sin(rad) * ring);
                     int pY = (int) (Math.cos(rad) * ring);
 
-                    removePaint(world, facing, hitX, hitY, hitZ, x, y, z, pX, pY);
+                    removePaint(world, side, hitX, hitY, hitZ, pos.getX(), pos.getY(), pos.getZ(), pX, pY);
                 }
             }
         }
@@ -83,7 +81,7 @@ public class PaintScraperItem extends Item {
             blockPaintPosZ = offsetsZ[1];
         }
 
-        PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
+        PaintedBlockEntity paintedBlock = getPaintEntity(world, new BlockPos(blockX, blockY, blockZ));
         if (paintedBlock == null) {
             return;
         }
@@ -105,12 +103,12 @@ public class PaintScraperItem extends Item {
         paintedBlock.removePaint(offsetX, offsetY, facing);
     }
 
-    private PaintedBlockEntity getPaintEntity(World world, int x, int y, int z) {
+    private PaintedBlockEntity getPaintEntity(World world, BlockPos pos) {
         PaintedBlockEntity paintedBlock = null;
         for (Object entity : world.loadedEntityList) {
             if (entity instanceof PaintedBlockEntity) {
                 PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                if (paintedBlockEntity.blockX == x && paintedBlockEntity.blockY == y && paintedBlockEntity.blockZ == z) {
+                if (paintedBlockEntity.blockPos.equals(pos)) {
                     paintedBlock = paintedBlockEntity;
                     break;
                 }
