@@ -82,7 +82,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void onUpdate() {
-        if (this.worldObj.isAirBlock(blockPos)) {
+        if (!canStay()) {
             this.setDead();
         } else if (this.paintList.isEmpty()) {
             this.setDead();
@@ -164,5 +164,9 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
 
     @Override
     public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_) {
+    }
+
+    public boolean canStay() {
+        return !this.worldObj.isAirBlock(blockPos);
     }
 }
