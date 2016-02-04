@@ -11,6 +11,7 @@ import net.ilexiconn.paintbrush.server.message.UpdateSizeMessage;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -26,20 +27,27 @@ public class Paintbrush {
     public static final String VERSION = "0.1.0";
 
     public static PaintbrushItem paintbrush;
+    public static PaintScraperItem paintScraper;
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void onInit(FMLInitializationEvent event) {
         networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("paintbrush");
         AbstractMessage.registerMessage(networkWrapper, AddPaintMessage.class, 0, Side.CLIENT);
         AbstractMessage.registerMessage(networkWrapper, UpdateSizeMessage.class, 1, Side.SERVER);
         AbstractMessage.registerMessage(networkWrapper, RemovePaintMessage.class, 2, Side.CLIENT);
 
         paintbrush = new PaintbrushItem();
+        paintScraper = new PaintScraperItem();
 
         EntityRegistry.registerModEntity(PaintedBlockEntity.class, "paintedBlock", 0, this, 64, 1, true);
         GameRegistry.registerItem(paintbrush, "paintbrush");
-        GameRegistry.registerItem(new PaintScraperItem(), "paint_scraper");
+        GameRegistry.registerItem(paintScraper, "paint_scraper");
 
-        proxy.init();
+        proxy.onInit();
+    }
+
+    @Mod.EventHandler
+    public void onPostInit(FMLPostInitializationEvent event) {
+        proxy.onPostInit();
     }
 }
