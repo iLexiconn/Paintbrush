@@ -107,11 +107,6 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     @Override
-    public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch) {
-
-    }
-
-    @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
         int blockX = compound.getInteger("BlockX");
         int blockY = compound.getInteger("BlockY");
