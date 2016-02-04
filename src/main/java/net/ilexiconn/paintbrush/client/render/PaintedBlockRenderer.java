@@ -61,13 +61,13 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                     worldRenderer.pos(px, py + 0.0625F, pz - 0.001F).color(r, g, b, 255).endVertex();
                     break;
                 case EAST:
-                    px = 0;
+                    px = 1.0F;
                     py = (paint.posY * 0.0625F);
                     pz = (paint.posX * 0.0625F);
-                    worldRenderer.pos(px - 0.001F, py, pz).color(r, g, b, 255).endVertex();
-                    worldRenderer.pos(px - 0.001F, py + 0.0625F, pz).color(r, g, b, 255).endVertex();
-                    worldRenderer.pos(px - 0.001F, py + 0.0625F, pz + 0.0625F).color(r, g, b, 255).endVertex();
-                    worldRenderer.pos(px - 0.001F, py, pz + 0.0625F).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px + 0.001F, py, pz).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px + 0.001F, py + 0.0625F, pz).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px + 0.001F, py + 0.0625F, pz + 0.0625F).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px + 0.001F, py, pz + 0.0625F).color(r, g, b, 255).endVertex();
                     break;
                 case SOUTH:
                     px = (paint.posX * 0.0625F);
@@ -79,13 +79,13 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                     worldRenderer.pos(px, py + 0.0625F, pz + 0.001F).color(r, g, b, 255).endVertex();
                     break;
                 case WEST:
-                    px = 1.0F;
+                    px = 0;
                     py = (paint.posY * 0.0625F);
                     pz = (paint.posX * 0.0625F);
-                    worldRenderer.pos(px + 0.001F, py, pz).color(r, g, b, 255).endVertex();
-                    worldRenderer.pos(px + 0.001F, py + 0.0625F, pz).color(r, g, b, 255).endVertex();
-                    worldRenderer.pos(px + 0.001F, py + 0.0625F, pz + 0.0625F).color(r, g, b, 255).endVertex();
-                    worldRenderer.pos(px + 0.001F, py, pz + 0.0625F).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px - 0.001F, py, pz).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px - 0.001F, py + 0.0625F, pz).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px - 0.001F, py + 0.0625F, pz + 0.0625F).color(r, g, b, 255).endVertex();
+                    worldRenderer.pos(px - 0.001F, py, pz + 0.0625F).color(r, g, b, 255).endVertex();
                     break;
                 case UP:
                     px = (paint.posX * 0.0625F);
