@@ -163,7 +163,7 @@ public class PaintbrushItem extends Item {
             blockPos--;
         }
 
-        return new int[] { blockPos, paintPos };
+        return new int[]{blockPos, paintPos};
     }
 
     @Override

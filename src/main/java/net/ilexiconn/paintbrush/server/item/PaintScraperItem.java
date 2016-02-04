@@ -86,21 +86,23 @@ public class PaintScraperItem extends Item {
             return;
         }
 
-        int offsetX = 0;
-        int offsetY = 0;
+        if (paintedBlock.canStay()) {
+            int offsetX = 0;
+            int offsetY = 0;
 
-        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-            offsetX = blockPaintPosX;
-            offsetY = blockPaintPosZ;
-        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-            offsetX = blockPaintPosX;
-            offsetY = blockPaintPosY;
-        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
-            offsetX = blockPaintPosZ;
-            offsetY = blockPaintPosY;
+            if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+                offsetX = blockPaintPosX;
+                offsetY = blockPaintPosZ;
+            } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+                offsetX = blockPaintPosX;
+                offsetY = blockPaintPosY;
+            } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+                offsetX = blockPaintPosZ;
+                offsetY = blockPaintPosY;
+            }
+
+            paintedBlock.removePaint(offsetX, offsetY, facing);
         }
-
-        paintedBlock.removePaint(offsetX, offsetY, facing);
     }
 
     private PaintedBlockEntity getPaintEntity(World world, BlockPos pos) {
