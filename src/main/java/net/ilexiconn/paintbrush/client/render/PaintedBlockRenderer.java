@@ -3,13 +3,11 @@ package net.ilexiconn.paintbrush.client.render;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,6 +28,7 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        AxisAlignedBB bounds = entity.worldObj.getBlockState(entity.blockPos).getBlock().getSelectedBoundingBox(entity.worldObj, entity.blockPos);
 
         for (Paint paint : entity.paintList) {
             GlStateManager.pushMatrix();
@@ -57,14 +56,14 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                 case NORTH:
                     px = (paint.posX * 0.0625F);
                     py = (paint.posY * 0.0625F);
-                    pz = 0;
+                    pz = bounds.minZ - entity.blockPos.getZ();
                     worldRenderer.pos(px, py, pz - 0.001F).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px + 0.0625F, py, pz - 0.001F).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px + 0.0625F, py + 0.0625F, pz - 0.001F).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px, py + 0.0625F, pz - 0.001F).color(r, g, b, 255).endVertex();
                     break;
                 case EAST:
-                    px = 1.0F;
+                    px = bounds.maxX - entity.blockPos.getX();
                     py = (paint.posY * 0.0625F);
                     pz = (paint.posX * 0.0625F);
                     worldRenderer.pos(px + 0.001F, py, pz).color(r, g, b, 255).endVertex();
@@ -75,14 +74,14 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                 case SOUTH:
                     px = (paint.posX * 0.0625F);
                     py = (paint.posY * 0.0625F);
-                    pz = 1.0F;
+                    pz = bounds.maxZ - entity.blockPos.getZ();
                     worldRenderer.pos(px, py, pz + 0.001F).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px + 0.0625F, py, pz + 0.001F).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px + 0.0625F, py + 0.0625F, pz + 0.001F).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px, py + 0.0625F, pz + 0.001F).color(r, g, b, 255).endVertex();
                     break;
                 case WEST:
-                    px = 0;
+                    px = bounds.minX - entity.blockPos.getX();
                     py = (paint.posY * 0.0625F);
                     pz = (paint.posX * 0.0625F);
                     worldRenderer.pos(px - 0.001F, py, pz).color(r, g, b, 255).endVertex();
@@ -92,7 +91,7 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                     break;
                 case UP:
                     px = (paint.posX * 0.0625F);
-                    py = 1.0F;
+                    py = bounds.maxY - entity.blockPos.getY();
                     pz = (paint.posY * 0.0625F);
                     worldRenderer.pos(px, py + 0.001F, pz).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px + 0.0625F, py + 0.001F, pz).color(r, g, b, 255).endVertex();
@@ -101,7 +100,7 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                     break;
                 case DOWN:
                     px = (paint.posX * 0.0625F);
-                    py = 0;
+                    py = bounds.minY - entity.blockPos.getY();
                     pz = (paint.posY * 0.0625F);
                     worldRenderer.pos(px, py - 0.001F, pz).color(r, g, b, 255).endVertex();
                     worldRenderer.pos(px + 0.0625F, py - 0.001F, pz).color(r, g, b, 255).endVertex();
