@@ -3,6 +3,7 @@ package net.ilexiconn.paintbrush.client.render;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -24,12 +25,14 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
     public void doRender(PaintedBlockEntity entity, double posX, double posY, double posZ, float yaw, float partialTicks) {
         Minecraft mc = Minecraft.getMinecraft();
 
-        GL11.glDisable(GL11.GL_CULL_FACE);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GlStateManager.disableCull();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableAlpha();
+        GlStateManager.disableBlend();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
         for (Paint paint : entity.paintList) {
-            GL11.glPushMatrix();
+            GlStateManager.pushMatrix();
 
             int i = entity.getBrightnessForFace(paint.facing);
             int j = i % 65536;
@@ -44,7 +47,7 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
             int g = (hex & 0xFF00) >> 8;
             int b = (hex & 0xFF);
 
-            GL11.glTranslated(posX - 0.5F, posY, posZ - 0.5F);
+            GlStateManager.translate(posX - 0.5F, posY, posZ - 0.5F);
 
             double px;
             double py;
@@ -107,11 +110,13 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
                     break;
             }
             tessellator.draw();
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GlStateManager.enableCull();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableBlend();
     }
 
     @Override
