@@ -3,7 +3,6 @@ package net.ilexiconn.paintbrush.server.item;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -47,7 +46,7 @@ public class PaintbrushItem extends Item {
     public int getColorFromItemStack(ItemStack stack, int renderPass) {
         if (renderPass != 0) {
             EnumChatFormatting color = EnumChatFormatting.values()[getColorFromDamage(stack)];
-            return getColorCode(color.formattingCode, Minecraft.getMinecraft().fontRendererObj);
+            return Minecraft.getMinecraft().fontRendererObj.getColorCode(color.formattingCode);
         } else {
             return 0xFFFFFF;
         }
@@ -180,10 +179,5 @@ public class PaintbrushItem extends Item {
         for (int i = 0; i < 16; i++) {
             items.add(new ItemStack(item, 1, getDamage(i, 1)));
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public int getColorCode(char character, FontRenderer fontRenderer) {
-        return fontRenderer.colorCode["0123456789abcdef".indexOf(character)];
     }
 }
