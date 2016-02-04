@@ -82,59 +82,44 @@ public class EventHandlerClient {
                     int g = (color >>> 8) & 0xFF;
                     int r = (color >>> 16) & 0xFF;
 
-                    GL11.glPushMatrix();
-                    GL11.glTranslated(16.0D, 16.0D, 0.0D);
-                    GL11.glScalef(2.0F, 2.0F, 2.0F);
-                    GL11.glColor4f(r / 255.0F, g / 255.0F, b / 255.0F, 1.0F);
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-                    for (int ring = 0; ring < size; ring++) {
-                        for (int i = 0; i < 360; ++i) {
-                            double rad = Math.toRadians((double) i);
-                            int pX = (int) (-Math.sin(rad) * ring);
-                            int pY = (int) (Math.cos(rad) * ring);
-                            drawRect(pX, pY, 1, 1);
-                        }
-                    }
-
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    GL11.glPopMatrix();
+                    drawPaintPreview(size, b, g, r);
                 } else if (item instanceof PaintScraperItem) {
-                    GL11.glPushMatrix();
-                    GL11.glTranslated(16.0D, 16.0D, 0.0D);
-                    GL11.glScalef(2.0F, 2.0F, 2.0F);
-                    GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-                    GL11.glDisable(GL11.GL_TEXTURE_2D);
-
-                    for (int ring = 0; ring < stack.getItemDamage(); ring++) {
-                        for (int i = 0; i < 360; ++i) {
-                            double rad = Math.toRadians((double) i);
-                            int pX = (int) (-Math.sin(rad) * ring);
-                            int pY = (int) (Math.cos(rad) * ring);
-                            drawRect(pX, pY, 1, 1);
-                        }
-                    }
-
-                    GL11.glEnable(GL11.GL_TEXTURE_2D);
-                    GL11.glPopMatrix();
+                    drawPaintPreview(stack.getItemDamage(), 255, 255, 255);
                 }
             }
         }
     }
 
+    private void drawPaintPreview(int size, int b, int g, int r) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(16.0D, 16.0D, 0.0D);
+        GlStateManager.scale(2.0F, 2.0F, 2.0F);
+        GlStateManager.color(r / 255.0F, g / 255.0F, b / 255.0F, 1.0F);
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableCull();
+
+        for (int ring = 0; ring < size; ring++) {
+            for (int i = 0; i < 360; ++i) {
+                double rad = Math.toRadians((double) i);
+                int pX = (int) (-Math.sin(rad) * ring);
+                int pY = (int) (Math.cos(rad) * ring);
+                drawRect(pX, pY, 1, 1);
+            }
+        }
+
+        GlStateManager.enableCull();
+        GlStateManager.enableTexture2D();
+        GlStateManager.popMatrix();
+    }
+
     public static void drawRect(int left, int top, int right, int bottom) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         worldrenderer.begin(7, DefaultVertexFormats.POSITION);
         worldrenderer.pos((double) left, (double) bottom, 0.0D).endVertex();
         worldrenderer.pos((double) right, (double) bottom, 0.0D).endVertex();
         worldrenderer.pos((double) right, (double) top, 0.0D).endVertex();
         worldrenderer.pos((double) left, (double) top, 0.0D).endVertex();
         tessellator.draw();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
     }
 }

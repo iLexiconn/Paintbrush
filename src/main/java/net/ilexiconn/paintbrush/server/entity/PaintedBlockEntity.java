@@ -161,4 +161,8 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
             this.paintList.add(paint);
         }
     }
+
+    @Override
+    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_) {
+    }
 }
