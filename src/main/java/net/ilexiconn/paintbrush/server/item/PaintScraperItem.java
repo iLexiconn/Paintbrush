@@ -1,11 +1,13 @@
 package net.ilexiconn.paintbrush.server.item;
 
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
+import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -35,7 +37,6 @@ public class PaintScraperItem extends Item {
                     double rad = Math.toRadians((double) i);
                     int pX = (int) (-Math.sin(rad) * ring);
                     int pY = (int) (Math.cos(rad) * ring);
-
                     removePaint(world, side, hitX, hitY, hitZ, pos.getX(), pos.getY(), pos.getZ(), pX, pY);
                 }
             }
@@ -82,11 +83,8 @@ public class PaintScraperItem extends Item {
         }
 
         PaintedBlockEntity paintedBlock = getPaintEntity(world, new BlockPos(blockX, blockY, blockZ));
-        if (paintedBlock == null) {
-            return;
-        }
 
-        if (paintedBlock.canStay()) {
+        if (paintedBlock != null) {
             int offsetX = 0;
             int offsetY = 0;
 
@@ -106,18 +104,16 @@ public class PaintScraperItem extends Item {
     }
 
     private PaintedBlockEntity getPaintEntity(World world, BlockPos pos) {
-        PaintedBlockEntity paintedBlock = null;
         for (Object entity : world.loadedEntityList) {
             if (entity instanceof PaintedBlockEntity) {
-                PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                if (paintedBlockEntity.blockPos.equals(pos)) {
-                    paintedBlock = paintedBlockEntity;
-                    break;
+                PaintedBlockEntity paintedBlock = (PaintedBlockEntity) entity;
+                if (paintedBlock.blockPos.equals(pos)) {
+                    return paintedBlock;
                 }
             }
         }
 
-        return paintedBlock;
+        return null;
     }
 
     private int[] offsetPos(int paintPos, int blockPos) {
@@ -126,6 +122,7 @@ public class PaintScraperItem extends Item {
             blockPos++;
         } else if (paintPos < 0) {
             paintPos = paintPos % 16;
+            paintPos += 16;
             blockPos--;
         }
 
