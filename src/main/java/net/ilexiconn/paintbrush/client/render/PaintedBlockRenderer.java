@@ -3,7 +3,10 @@ package net.ilexiconn.paintbrush.client.render;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -27,7 +30,8 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
         GlStateManager.disableTexture2D();
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GL11.glNormal3f(1.0F, 0.0F, 0.0F);
         AxisAlignedBB bounds = entity.worldObj.getBlockState(entity.blockPos).getBlock().getSelectedBoundingBox(entity.worldObj, entity.blockPos);
 
         for (Paint paint : entity.paintList) {
