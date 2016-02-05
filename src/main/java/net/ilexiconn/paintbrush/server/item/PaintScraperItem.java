@@ -84,40 +84,37 @@ public class PaintScraperItem extends Item {
         }
 
         PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
-        if (paintedBlock == null) {
-            return;
+
+        if (paintedBlock != null) {
+            int offsetX = 0;
+            int offsetY = 0;
+
+            if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+                offsetX = blockPaintPosX;
+                offsetY = blockPaintPosZ;
+            } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+                offsetX = blockPaintPosX;
+                offsetY = blockPaintPosY;
+            } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+                offsetX = blockPaintPosZ;
+                offsetY = blockPaintPosY;
+            }
+
+            paintedBlock.removePaint(offsetX, offsetY, facing);
         }
-
-        int offsetX = 0;
-        int offsetY = 0;
-
-        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-            offsetX = blockPaintPosX;
-            offsetY = blockPaintPosZ;
-        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-            offsetX = blockPaintPosX;
-            offsetY = blockPaintPosY;
-        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
-            offsetX = blockPaintPosZ;
-            offsetY = blockPaintPosY;
-        }
-
-        paintedBlock.removePaint(offsetX, offsetY, facing);
     }
 
     private PaintedBlockEntity getPaintEntity(World world, int x, int y, int z) {
-        PaintedBlockEntity paintedBlock = null;
         for (Object entity : world.loadedEntityList) {
             if (entity instanceof PaintedBlockEntity) {
-                PaintedBlockEntity paintedBlockEntity = (PaintedBlockEntity) entity;
-                if (paintedBlockEntity.blockX == x && paintedBlockEntity.blockY == y && paintedBlockEntity.blockZ == z) {
-                    paintedBlock = paintedBlockEntity;
-                    break;
+                PaintedBlockEntity paintedBlock = (PaintedBlockEntity) entity;
+                if (paintedBlock.blockX == x && paintedBlock.blockY == y && paintedBlock.blockZ == z) {
+                    return paintedBlock;
                 }
             }
         }
 
-        return paintedBlock;
+        return null;
     }
 
     private int[] offsetPos(int paintPos, int blockPos) {
@@ -126,6 +123,7 @@ public class PaintScraperItem extends Item {
             blockPos++;
         } else if (paintPos < 0) {
             paintPos = paintPos % 16;
+            paintPos += 16;
             blockPos--;
         }
 

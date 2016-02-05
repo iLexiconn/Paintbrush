@@ -182,6 +182,7 @@ public class PaintbrushItem extends Item {
             blockPos++;
         } else if (paintPos < 0) {
             paintPos = paintPos % 16;
+            paintPos += 16;
             blockPos--;
         }
 
