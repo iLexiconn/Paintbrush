@@ -8,12 +8,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderEntity;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class PaintedBlockRenderer extends RenderEntity {
+public class PaintedBlockRenderer extends Render {
     @Override
     public void doRender(Entity entity, double posX, double posY, double posZ, float yaw, float partialTicks) {
         if (entity instanceof PaintedBlockEntity) {
@@ -24,6 +26,7 @@ public class PaintedBlockRenderer extends RenderEntity {
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            AxisAlignedBB bounds = entity.worldObj.getBlock(paintedBlockEntity.blockX, paintedBlockEntity.blockY, paintedBlockEntity.blockZ).getSelectedBoundingBoxFromPool(paintedBlockEntity.worldObj, paintedBlockEntity.blockX, paintedBlockEntity.blockY, paintedBlockEntity.blockZ);
 
             for (Paint paint : paintedBlockEntity.paintList) {
                 GL11.glPushMatrix();
@@ -51,14 +54,14 @@ public class PaintedBlockRenderer extends RenderEntity {
                     case NORTH:
                         px = (paint.posX * 0.0625F);
                         py = (paint.posY * 0.0625F);
-                        pz = 0;
+                        pz = bounds.minZ - paintedBlockEntity.posZ;
                         tessellator.addVertex(px, py, pz - 0.001F);
                         tessellator.addVertex(px + 0.0625F, py, pz - 0.001F);
                         tessellator.addVertex(px + 0.0625F, py + 0.0625F, pz - 0.001F);
                         tessellator.addVertex(px, py + 0.0625F, pz - 0.001F);
                         break;
                     case EAST:
-                        px = 0;
+                        px = bounds.maxX - paintedBlockEntity.posX;
                         py = (paint.posY * 0.0625F);
                         pz = (paint.posX * 0.0625F);
                         tessellator.addVertex(px - 0.001F, py, pz);
@@ -69,14 +72,14 @@ public class PaintedBlockRenderer extends RenderEntity {
                     case SOUTH:
                         px = (paint.posX * 0.0625F);
                         py = (paint.posY * 0.0625F);
-                        pz = 1.0F;
+                        pz = bounds.maxZ - paintedBlockEntity.posZ;
                         tessellator.addVertex(px, py, pz + 0.001F);
                         tessellator.addVertex(px + 0.0625F, py, pz + 0.001F);
                         tessellator.addVertex(px + 0.0625F, py + 0.0625F, pz + 0.001F);
                         tessellator.addVertex(px, py + 0.0625F, pz + 0.001F);
                         break;
                     case WEST:
-                        px = 1.0F;
+                        px = bounds.minX - paintedBlockEntity.posX;
                         py = (paint.posY * 0.0625F);
                         pz = (paint.posX * 0.0625F);
                         tessellator.addVertex(px + 0.001F, py, pz);
@@ -86,7 +89,7 @@ public class PaintedBlockRenderer extends RenderEntity {
                         break;
                     case UP:
                         px = (paint.posX * 0.0625F);
-                        py = 1.0F;
+                        py = bounds.maxY - paintedBlockEntity.posY;
                         pz = (paint.posY * 0.0625F);
                         tessellator.addVertex(px, py + 0.001F, pz);
                         tessellator.addVertex(px + 0.0625F, py + 0.001F, pz);
@@ -95,7 +98,7 @@ public class PaintedBlockRenderer extends RenderEntity {
                         break;
                     case DOWN:
                         px = (paint.posX * 0.0625F);
-                        py = 0;
+                        py = bounds.minY - paintedBlockEntity.posY;
                         pz = (paint.posY * 0.0625F);
                         tessellator.addVertex(px, py - 0.001F, pz);
                         tessellator.addVertex(px + 0.0625F, py - 0.001F, pz);
@@ -110,6 +113,11 @@ public class PaintedBlockRenderer extends RenderEntity {
             GL11.glEnable(GL11.GL_CULL_FACE);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
         }
+    }
+
+    @Override
+    protected ResourceLocation getEntityTexture(Entity entity) {
+        return null;
     }
 
     public int getColorCode(char character, FontRenderer fontRenderer) {
