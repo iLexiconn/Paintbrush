@@ -12,6 +12,7 @@ import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -36,6 +37,10 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
             if (p.posX == paint.posX && p.posY == paint.posY && p.facing == paint.facing) {
                 return false;
             }
+        }
+        AxisAlignedBB bounds = worldObj.getBlock(blockX, blockY, blockZ).getSelectedBoundingBoxFromPool(worldObj, blockX, blockY, blockZ);
+        if (paint.facing != EnumFacing.UP && paint.facing != EnumFacing.DOWN && paint.posY > (bounds.maxY - posY) * 16 - 1) {
+            return false;
         }
         this.paintList.add(paint);
         Paintbrush.networkWrapper.sendToAll(new AddPaintMessage(this, paint));
