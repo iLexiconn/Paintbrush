@@ -135,22 +135,25 @@ public class PaintbrushItem extends Item {
 
         PaintedBlockEntity paintedBlock = getPaintEntity(world, blockX, blockY, blockZ);
 
-        int offsetX = 0;
-        int offsetY = 0;
+        if (paintedBlock.canStay()) {
+            int offsetX = 0;
+            int offsetY = 0;
 
-        if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
-            offsetX = blockPaintPosX;
-            offsetY = blockPaintPosZ;
-        } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-            offsetX = blockPaintPosX;
-            offsetY = blockPaintPosY;
-        } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
-            offsetX = blockPaintPosZ;
-            offsetY = blockPaintPosY;
+            if (facing == EnumFacing.DOWN || facing == EnumFacing.UP) {
+                offsetX = blockPaintPosX;
+                offsetY = blockPaintPosZ;
+            } else if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
+                offsetX = blockPaintPosX;
+                offsetY = blockPaintPosY;
+            } else if (facing == EnumFacing.WEST || facing == EnumFacing.EAST) {
+                offsetX = blockPaintPosZ;
+                offsetY = blockPaintPosY;
+            }
+
+            Paint paint = new Paint(facing, offsetX, offsetY, color);
+            return paintedBlock.addPaint(paint);
         }
-
-        Paint paint = new Paint(facing, offsetX, offsetY, color);
-        return paintedBlock.addPaint(paint);
+        return false;
     }
 
     private PaintedBlockEntity getPaintEntity(World world, int x, int y, int z) {
