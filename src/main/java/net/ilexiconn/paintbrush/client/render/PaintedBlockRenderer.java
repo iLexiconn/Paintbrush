@@ -64,10 +64,10 @@ public class PaintedBlockRenderer extends Render {
                         px = 0.5F + bounds.minX - paintedBlockEntity.posX;
                         py = (paint.posY * 0.0625F);
                         pz = (paint.posX * 0.0625F);
-                        tessellator.addVertex(px + 0.001F, py, pz);
-                        tessellator.addVertex(px + 0.001F, py + 0.0625F, pz);
-                        tessellator.addVertex(px + 0.001F, py + 0.0625F, pz + 0.0625F);
-                        tessellator.addVertex(px + 0.001F, py, pz + 0.0625F);
+                        tessellator.addVertex(px - 0.001F, py, pz);
+                        tessellator.addVertex(px - 0.001F, py + 0.0625F, pz);
+                        tessellator.addVertex(px - 0.001F, py + 0.0625F, pz + 0.0625F);
+                        tessellator.addVertex(px - 0.001F, py, pz + 0.0625F);
                         break;
                     case SOUTH:
                         px = (paint.posX * 0.0625F);
@@ -82,10 +82,10 @@ public class PaintedBlockRenderer extends Render {
                         px = 0.5F + bounds.maxX - paintedBlockEntity.posX;
                         py = (paint.posY * 0.0625F);
                         pz = (paint.posX * 0.0625F);
-                        tessellator.addVertex(px - 0.001F, py, pz);
-                        tessellator.addVertex(px - 0.001F, py + 0.0625F, pz);
-                        tessellator.addVertex(px - 0.001F, py + 0.0625F, pz + 0.0625F);
-                        tessellator.addVertex(px - 0.001F, py, pz + 0.0625F);
+                        tessellator.addVertex(px + 0.001F, py, pz);
+                        tessellator.addVertex(px + 0.001F, py + 0.0625F, pz);
+                        tessellator.addVertex(px + 0.001F, py + 0.0625F, pz + 0.0625F);
+                        tessellator.addVertex(px + 0.001F, py, pz + 0.0625F);
                         break;
                     case UP:
                         px = (paint.posX * 0.0625F);
