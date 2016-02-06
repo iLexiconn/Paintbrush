@@ -26,7 +26,7 @@ public class PaintedBlockRenderer extends Render {
             GL11.glDisable(GL11.GL_CULL_FACE);
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GL11.glNormal3f(1.0F, 0.0F, 0.0F);
+            GL11.glNormal3f(0.5F, 0.5F, 0.5F);
             AxisAlignedBB bounds = entity.worldObj.getBlock(paintedBlockEntity.blockX, paintedBlockEntity.blockY, paintedBlockEntity.blockZ).getSelectedBoundingBoxFromPool(paintedBlockEntity.worldObj, paintedBlockEntity.blockX, paintedBlockEntity.blockY, paintedBlockEntity.blockZ);
 
             for (Paint paint : paintedBlockEntity.paintList) {
