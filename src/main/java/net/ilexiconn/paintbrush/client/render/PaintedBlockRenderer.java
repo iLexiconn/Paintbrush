@@ -31,7 +31,7 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glNormal3f(1.0F, 0.0F, 0.0F);
+        GL11.glNormal3f(0.5F, 0.5F, 0.5F);
         AxisAlignedBB bounds = entity.worldObj.getBlockState(entity.blockPos).getBlock().getSelectedBoundingBox(entity.worldObj, entity.blockPos);
 
         for (Paint paint : entity.paintList) {
