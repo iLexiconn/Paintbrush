@@ -181,4 +181,9 @@ public class PaintbrushItem extends Item {
             items.add(new ItemStack(item, 1, getDamage(i, 1)));
         }
     }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
+    }
 }

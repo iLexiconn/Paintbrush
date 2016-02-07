@@ -1,13 +1,11 @@
 package net.ilexiconn.paintbrush.server.item;
 
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
-import net.ilexiconn.paintbrush.server.util.Paint;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -131,13 +129,18 @@ public class PaintScraperItem extends Item {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List info, boolean advancedTooltips) {
+    public void addInformation(ItemStack stack, EntityPlayer player, List<String> info, boolean advancedTooltips) {
         info.add(StatCollector.translateToLocal("tooltip.paintbrush.size") + ": " + stack.getItemDamage());
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item item, CreativeTabs tab, List items) {
+    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> items) {
         items.add(new ItemStack(item, 1, 1));
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return false;
     }
 }
