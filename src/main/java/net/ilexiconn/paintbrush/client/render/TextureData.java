@@ -18,13 +18,14 @@ public class TextureData {
         for (int i = 0; i < EnumFacing.values().length; i++) {
             this.paintTexture[i] = new DynamicTexture(16, 16);
             this.paintTextureData[i] = this.paintTexture[i].getTextureData();
-            this.paintTextureLocation[i] = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation("paint/" + entity.blockPos.getX() + entity.blockPos.getY() + entity.blockPos.getZ() + i, this.paintTexture[i]);
+            this.paintTextureLocation[i] = Minecraft.getMinecraft().getTextureManager().getDynamicTextureLocation("paint/" + entity.blockPos.getX() + "-" + entity.blockPos.getY() + "-" + entity.blockPos.getZ() + "-" + i, this.paintTexture[i]);
         }
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++) {
-                setColor(EnumFacing.NORTH, x, y, 0xFFFFFFFF);
+                setColor(EnumFacing.NORTH, x, y, 0xFFFFFFFF, false);
             }
         }
+        getPaintTexture(EnumFacing.NORTH).updateDynamicTexture();
     }
 
     public DynamicTexture getPaintTexture(EnumFacing facing) {
@@ -35,9 +36,11 @@ public class TextureData {
         return this.paintTextureData[facing.ordinal()];
     }
 
-    public void setColor(EnumFacing facing, int x, int y, int color) {
+    public void setColor(EnumFacing facing, int x, int y, int color, boolean update) {
         this.paintTextureData[facing.ordinal()][(16 * y) + x] = color;
-        this.getPaintTexture(facing).updateDynamicTexture();
+        if (update) {
+            this.getPaintTexture(facing).updateDynamicTexture();
+        }
     }
 
     public ResourceLocation getPaintTextureLocation(EnumFacing facing) {
