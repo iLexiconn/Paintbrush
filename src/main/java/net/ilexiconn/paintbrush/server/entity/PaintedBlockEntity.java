@@ -15,6 +15,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
@@ -95,17 +96,17 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         }
         List<Paint> toRemove = Lists.newArrayList();
         for (Paint paint : paintList) {
-            if (!worldObj.isAirBlock(blockX, blockY + 1, blockZ) && paint.facing == EnumFacing.UP) {
+            if (!worldObj.isAirBlock(blockX, blockY + 1, blockZ) && !(this.worldObj.getBlock(blockX, blockY + 1, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.UP) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY - 1, blockZ) && paint.facing == EnumFacing.DOWN) {
+            } else if (!worldObj.isAirBlock(blockX, blockY - 1, blockZ) && !(this.worldObj.getBlock(blockX, blockY - 1, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.DOWN) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX + 1, blockY, blockZ) && paint.facing == EnumFacing.WEST) {
+            } else if (!worldObj.isAirBlock(blockX + 1, blockY, blockZ) && !(this.worldObj.getBlock(blockX + 1, blockY, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.WEST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX - 1, blockY, blockZ) && paint.facing == EnumFacing.EAST) {
+            } else if (!worldObj.isAirBlock(blockX - 1, blockY, blockZ) && !(this.worldObj.getBlock(blockX - 1, blockY, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.EAST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ - 1) && paint.facing == EnumFacing.NORTH) {
+            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ - 1) && !(this.worldObj.getBlock(blockX, blockY, blockZ - 1) instanceof IPlantable) && paint.facing == EnumFacing.NORTH) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ + 1) && paint.facing == EnumFacing.SOUTH) {
+            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ + 1) && !(this.worldObj.getBlock(blockX, blockY, blockZ + 1) instanceof IPlantable) && paint.facing == EnumFacing.SOUTH) {
                 toRemove.add(paint);
             }
         }
@@ -148,7 +149,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     public boolean canStay() {
-        return !this.worldObj.isAirBlock(blockX, blockY, blockZ);
+        return !(this.worldObj.isAirBlock(blockX, blockY, blockZ) || this.worldObj.getBlock(blockX, blockY, blockZ) instanceof IPlantable || this.worldObj.getBlock(blockX, blockY, blockZ).getMaterial().isLiquid());
     }
 
     @Override
