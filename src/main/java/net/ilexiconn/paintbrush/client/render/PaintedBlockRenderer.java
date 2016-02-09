@@ -12,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -39,13 +40,13 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
     @Override
     public void doRender(PaintedBlockEntity entity, double posX, double posY, double posZ, float yaw, float partialTicks) {
         TextureData textureData = getTextureData(entity);
-        /*GlStateManager.disableCull();
+        GlStateManager.disableCull();
         GlStateManager.disableTexture2D();
         GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glNormal3f(0.5F, 0.5F, 0.5F);
-        AxisAlignedBB bounds = entity.worldObj.getBlockState(entity.blockPos).getBlock().getSelectedBoundingBox(entity.worldObj, entity.blockPos);*/
+//        AxisAlignedBB bounds = entity.worldObj.getBlockState(entity.blockPos).getBlock().getSelectedBoundingBox(entity.worldObj, entity.blockPos);
 
         for (EnumFacing facing : EnumFacing.VALUES) {
             GlStateManager.pushMatrix();
@@ -69,6 +70,11 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
             tessellator.draw();
             GlStateManager.popMatrix();
         }
+
+        GlStateManager.enableCull();
+        GlStateManager.enableTexture2D();
+        GlStateManager.enableAlpha();
+        GlStateManager.enableBlend();
 
         /*for (Paint paint : entity.paintList) {
             GlStateManager.pushMatrix();
@@ -150,12 +156,7 @@ public class PaintedBlockRenderer extends Render<PaintedBlockEntity> {
             }
             tessellator.draw();
             GlStateManager.popMatrix();
-        }
-
-        GlStateManager.enableCull();
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();*/
+        }*/
     }
 
     @Override
