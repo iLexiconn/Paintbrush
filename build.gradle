@@ -18,6 +18,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 
 version = getVersion("VERSION")
+llibrary_version = getVersion("LLIBRARY_VERSION")
 group = "net.ilexiconn.paintbrush"
 archivesBaseName = "paintbrush"
 sourceCompatibility = targetCompatibility = "1.7"
@@ -36,18 +37,19 @@ repositories {
 }
 
 dependencies {
-    compile "net.ilexiconn:llibrary:" + getVersion("LLIBRARY_VERSION") + "-1.8.9:dev"
+    compile "net.ilexiconn:llibrary:$llibrary_version-1.8.9:dev"
 }
 
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
+    inputs.property "llibrary_version", project.llibrary_version
 
     from (sourceSets.main.resources.srcDirs) {
         include "mcmod.info"
-        expand "version": project.version, "mcversion": project.minecraft.version
+        expand "version": project.version, "mcversion": project.minecraft.version, "llibrary_version": project.llibrary_version
     }
-        
+
     from (sourceSets.main.resources.srcDirs) {
         exclude "mcmod.info"
     }
