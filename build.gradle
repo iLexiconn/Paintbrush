@@ -17,8 +17,8 @@ buildscript {
 
 apply plugin: "forge"
 
-version = getVersion("VERSION")
-def llibrary_version = getVersion("LLIBRARY_VERSION")
+version = getVersion("VERSION") + "-1.7.10"
+def llibrary_version = getVersion("LLIBRARY_VERSION") + "-1.7.10"
 group = "net.ilexiconn.paintbrush"
 archivesBaseName = "paintbrush"
 sourceCompatibility = targetCompatibility = "1.7"
@@ -36,7 +36,7 @@ repositories {
 }
 
 dependencies {
-    compile "net.ilexiconn:llibrary:$llibrary_version-1.7.10:dev"
+    compile "net.ilexiconn:llibrary:$llibrary_version:dev"
 }
 
 processResources {
