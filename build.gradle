@@ -20,6 +20,7 @@ apply plugin: "net.minecraftforge.gradle.forge"
 version = getVersion()
 group = "net.ilexiconn.paintbrush"
 archivesBaseName = "paintbrush"
+sourceCompatibility = targetCompatibility = "1.8"
 
 minecraft {
     version = "1.8.9-11.15.1.1722"
