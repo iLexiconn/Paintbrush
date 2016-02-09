@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "paintbrush",
+    "name": "Paintbrush",
+    "description": "",
+    "version": "${version}",
+    "url": "https://ilexiconn.net/",
+    "authorList": [
+      "iLexiconn"
+    ],
+    "dependencies": [
+      "llibrary@[${llibrary_version},)"
+    ],
+    "useDependencyInformation": true
+  }
+]
