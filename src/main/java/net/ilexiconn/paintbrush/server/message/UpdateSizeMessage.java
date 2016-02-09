@@ -3,8 +3,7 @@ package net.ilexiconn.paintbrush.server.message;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
-import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
+import net.ilexiconn.llibrary.common.message.AbstractMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
