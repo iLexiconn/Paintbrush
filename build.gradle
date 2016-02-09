@@ -18,7 +18,7 @@ buildscript {
 apply plugin: "net.minecraftforge.gradle.forge"
 
 version = getVersion("VERSION") + "-1.8.9"
-def llibrary_version = getVersion("LLIBRARY_VERSION") + "-1.8.9"
+def llibrary_version = getVersion("LLIBRARY_VERSION")
 group = "net.ilexiconn.paintbrush"
 archivesBaseName = "paintbrush"
 sourceCompatibility = targetCompatibility = "1.7"
@@ -27,6 +27,7 @@ minecraft {
     version = "1.8.9-11.15.1.1722"
     runDir = "minecraft"
 	mappings = "stable_20"
+    makeObfSourceJar = false
 }
 
 repositories {
@@ -37,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    compile "net.ilexiconn:llibrary:$llibrary_version:dev"
+    compile "net.ilexiconn:llibrary:$llibrary_version-1.8.9:dev"
 }
 
 processResources {
