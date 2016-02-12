@@ -35,7 +35,7 @@ public class PaintedBlockRenderer extends Render {
                 int i = paintedBlockEntity.getBrightnessForFace(paint.facing);
                 int j = i % 65536;
                 int k = i / 65536;
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)j / 1.0F, (float)k / 1.0F);
+                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
 
                 Tessellator tessellator = Tessellator.instance;
                 tessellator.startDrawingQuads();

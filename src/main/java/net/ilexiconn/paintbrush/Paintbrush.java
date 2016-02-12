@@ -12,6 +12,7 @@ import cpw.mods.fml.relauncher.Side;
 import net.ilexiconn.llibrary.common.message.AbstractMessage;
 import net.ilexiconn.paintbrush.server.ProxyServer;
 import net.ilexiconn.paintbrush.server.api.PaintbrushAPI;
+import net.ilexiconn.paintbrush.server.creativetab.PaintbrushCreativeTab;
 import net.ilexiconn.paintbrush.server.entity.PaintedBlockEntity;
 import net.ilexiconn.paintbrush.server.item.PaintScraperItem;
 import net.ilexiconn.paintbrush.server.item.PaintbrushItem;
@@ -25,13 +26,13 @@ import net.minecraftforge.common.IPlantable;
 
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION, dependencies = "required-after:llibrary@[" + Paintbrush.LLIBRARY_VERSION + ",)")
 public class Paintbrush {
+    public static final String VERSION = "0.1.1-develop";
+    public static final String LLIBRARY_VERSION = "0.7.0";
     @SidedProxy(serverSide = "net.ilexiconn.paintbrush.server.ProxyServer", clientSide = "net.ilexiconn.paintbrush.client.ProxyClient")
     public static ProxyServer proxy;
     public static SimpleNetworkWrapper networkWrapper;
 
-    public static final String VERSION = "0.1.1-develop";
-    public static final String LLIBRARY_VERSION = "0.7.0";
-
+    public static PaintbrushCreativeTab creativeTab;
     public static PaintbrushItem paintbrush;
     public static PaintScraperItem paintScraper;
 
@@ -42,6 +43,7 @@ public class Paintbrush {
         AbstractMessage.registerMessage(networkWrapper, UpdateSizeMessage.class, 1, Side.SERVER);
         AbstractMessage.registerMessage(networkWrapper, RemovePaintMessage.class, 2, Side.CLIENT);
 
+        creativeTab = new PaintbrushCreativeTab();
         paintbrush = new PaintbrushItem();
         paintScraper = new PaintScraperItem();
 
@@ -70,7 +72,8 @@ public class Paintbrush {
                     try {
                         Class<?> type = Class.forName(string);
                         PaintbrushAPI.registerIgnoredBlockType(type);
-                    } catch (ClassNotFoundException ignored) {}
+                    } catch (ClassNotFoundException ignored) {
+                    }
                 }
             }
         }
