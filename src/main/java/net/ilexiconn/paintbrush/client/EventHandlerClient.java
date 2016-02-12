@@ -25,6 +25,17 @@ import static net.ilexiconn.paintbrush.server.item.PaintbrushItem.*;
 public class EventHandlerClient {
     private Minecraft mc = Minecraft.getMinecraft();
 
+    public static void drawRect(int left, int top, int right, int bottom) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldrenderer.pos((double) left, (double) bottom, 0.0D).endVertex();
+        worldrenderer.pos((double) right, (double) bottom, 0.0D).endVertex();
+        worldrenderer.pos((double) right, (double) top, 0.0D).endVertex();
+        worldrenderer.pos((double) left, (double) top, 0.0D).endVertex();
+        tessellator.draw();
+    }
+
     @SubscribeEvent
     public void onMouseInput(MouseEvent event) {
         EntityPlayer player = mc.thePlayer;
@@ -109,16 +120,5 @@ public class EventHandlerClient {
         GlStateManager.enableCull();
         GlStateManager.enableTexture2D();
         GlStateManager.popMatrix();
-    }
-
-    public static void drawRect(int left, int top, int right, int bottom) {
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
-        worldrenderer.pos((double) left, (double) bottom, 0.0D).endVertex();
-        worldrenderer.pos((double) right, (double) bottom, 0.0D).endVertex();
-        worldrenderer.pos((double) right, (double) top, 0.0D).endVertex();
-        worldrenderer.pos((double) left, (double) top, 0.0D).endVertex();
-        tessellator.draw();
     }
 }

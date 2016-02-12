@@ -47,7 +47,7 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         return true;
     }
 
-    public void removePaint(int x, int y, EnumFacing facing) {
+    public boolean removePaint(int x, int y, EnumFacing facing) {
         Paint toRemove = null;
         for (Paint paint : this.paintList) {
             if (paint.posX == x && paint.posY == y && paint.facing == facing) {
@@ -58,6 +58,9 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         if (toRemove != null) {
             this.paintList.remove(toRemove);
             Paintbrush.networkWrapper.sendToAll(new RemovePaintMessage(this, toRemove));
+            return true;
+        } else {
+            return false;
         }
     }
 

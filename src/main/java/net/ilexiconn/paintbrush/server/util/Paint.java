@@ -26,13 +26,6 @@ public class Paint {
         return new Paint(facing, posX, posY, color);
     }
 
-    public void writeToNBT(NBTTagCompound compound) {
-        compound.setInteger("Facing", facing.ordinal());
-        compound.setInteger("PosX", posX);
-        compound.setInteger("PosY", posY);
-        compound.setInteger("Color", color.ordinal());
-    }
-
     public static Paint decode(ByteBuf buf) {
         int data = buf.readInt();
         EnumFacing facing = EnumFacing.values()[data & 0B111];
@@ -40,6 +33,13 @@ public class Paint {
         int posY = (data >>> 7) & 0B1111;
         EnumChatFormatting color = EnumChatFormatting.values()[(data >>> 11) & 0B1111];
         return new Paint(facing, posX, posY, color);
+    }
+
+    public void writeToNBT(NBTTagCompound compound) {
+        compound.setInteger("Facing", facing.ordinal());
+        compound.setInteger("PosX", posX);
+        compound.setInteger("PosY", posY);
+        compound.setInteger("Color", color.ordinal());
     }
 
     public void encode(ByteBuf buf) {
