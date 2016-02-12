@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.ilexiconn.paintbrush.Paintbrush;
+import net.ilexiconn.paintbrush.server.api.PaintbrushAPI;
 import net.ilexiconn.paintbrush.server.message.AddPaintMessage;
 import net.ilexiconn.paintbrush.server.message.RemovePaintMessage;
 import net.ilexiconn.paintbrush.server.util.Paint;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
@@ -96,17 +96,17 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
         }
         List<Paint> toRemove = Lists.newArrayList();
         for (Paint paint : paintList) {
-            if (!worldObj.isAirBlock(blockX, blockY + 1, blockZ) && !(this.worldObj.getBlock(blockX, blockY + 1, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.UP) {
+            if (!worldObj.isAirBlock(blockX, blockY + 1, blockZ) && !PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX, blockY + 1, blockZ)) && paint.facing == EnumFacing.UP) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY - 1, blockZ) && !(this.worldObj.getBlock(blockX, blockY - 1, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.DOWN) {
+            } else if (!worldObj.isAirBlock(blockX, blockY - 1, blockZ) && !PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX, blockY - 1, blockZ)) && paint.facing == EnumFacing.DOWN) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX + 1, blockY, blockZ) && !(this.worldObj.getBlock(blockX + 1, blockY, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.WEST) {
+            } else if (!worldObj.isAirBlock(blockX + 1, blockY, blockZ) && !PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX + 1, blockY, blockZ)) && paint.facing == EnumFacing.WEST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX - 1, blockY, blockZ) && !(this.worldObj.getBlock(blockX - 1, blockY, blockZ) instanceof IPlantable) && paint.facing == EnumFacing.EAST) {
+            } else if (!worldObj.isAirBlock(blockX - 1, blockY, blockZ) && !PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX - 1, blockY, blockZ)) && paint.facing == EnumFacing.EAST) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ - 1) && !(this.worldObj.getBlock(blockX, blockY, blockZ - 1) instanceof IPlantable) && paint.facing == EnumFacing.NORTH) {
+            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ - 1) && !PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX, blockY, blockZ - 1)) && paint.facing == EnumFacing.NORTH) {
                 toRemove.add(paint);
-            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ + 1) && !(this.worldObj.getBlock(blockX, blockY, blockZ + 1) instanceof IPlantable) && paint.facing == EnumFacing.SOUTH) {
+            } else if (!worldObj.isAirBlock(blockX, blockY, blockZ + 1) && !PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX, blockY, blockZ + 1)) && paint.facing == EnumFacing.SOUTH) {
                 toRemove.add(paint);
             }
         }
@@ -144,15 +144,6 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
     }
 
     @Override
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
-
-    }
-
-    public boolean canStay() {
-        return !(this.worldObj.isAirBlock(blockX, blockY, blockZ) || this.worldObj.getBlock(blockX, blockY, blockZ) instanceof IPlantable || this.worldObj.getBlock(blockX, blockY, blockZ).getMaterial().isLiquid());
-    }
-
-    @Override
     public void writeSpawnData(ByteBuf buf) {
         buf.writeInt(this.blockX);
         buf.writeInt(this.blockY);
@@ -174,5 +165,14 @@ public class PaintedBlockEntity extends Entity implements IEntityAdditionalSpawn
             Paint paint = Paint.decode(buf);
             this.paintList.add(paint);
         }
+    }
+
+    @Override
+    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements) {
+
+    }
+
+    public boolean canStay() {
+        return !(this.worldObj.isAirBlock(blockX, blockY, blockZ) || PaintbrushAPI.isBlockIgnored(worldObj.getBlock(blockX, blockY, blockZ)) || this.worldObj.getBlock(blockX, blockY, blockZ).getMaterial().isLiquid());
     }
 }
