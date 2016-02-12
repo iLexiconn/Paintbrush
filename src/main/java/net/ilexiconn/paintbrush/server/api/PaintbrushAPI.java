@@ -14,14 +14,32 @@ public class PaintbrushAPI {
     private static List<Block> ignoredBlockList = Lists.newArrayList();
     private static List<Class<?>> ignoredBlockTypeList = Lists.newArrayList();
 
+    /**
+     * Register a block that gets completely ignored by the paint. Placing the block on paint won't remove the paint,
+     * and you won't be able to place the paint on the ignored blocks.
+     *
+     * @param block the block to be ignored.
+     */
     public static void registerIgnoredBlock(Block block) {
         ignoredBlockList.add(block);
     }
 
+    /**
+     * Register a block type that gets completely ignored by the paint. Placing the block on paint won't remove the
+     * paint, and you won't be able to place the paint on the ignored blocks.
+     * Default ignored types:
+     * {@link net.minecraftforge.common.IPlantable}
+     *
+     * @param type the block type to be ignored.
+     */
     public static void registerIgnoredBlockType(Class<?> type) {
         ignoredBlockTypeList.add(type);
     }
 
+    /**
+     * @param block the block to check.
+     * @return true if the block is ignored.
+     */
     public static boolean isBlockIgnored(Block block) {
         if (!ignoredBlockList.contains(block)) {
             for (Class<?> type : ignoredBlockTypeList) {
