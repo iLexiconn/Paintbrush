@@ -41,6 +41,12 @@ dependencies {
     compile "net.ilexiconn:llibrary:$llibrary_version-1.8.9:dev"
 }
 
+jar {
+    manifest {
+        attributes "FMLAT" : "paintbrush_at.cfg"
+    }
+}
+
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version

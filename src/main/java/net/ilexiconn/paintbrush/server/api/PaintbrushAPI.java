@@ -54,8 +54,6 @@ public class PaintbrushAPI {
         }
     }
 
-
-
     public static int addPaint(World world, BlockPos pos, float hitX, float hitY, float hitZ, EnumFacing facing, EnumChatFormatting color, int radius) {
         int j = 0;
         if (!world.isRemote) {
