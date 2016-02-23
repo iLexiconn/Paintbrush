@@ -27,7 +27,7 @@ import net.minecraftforge.common.IPlantable;
 @Mod(modid = "paintbrush", name = "Paintbrush", version = Paintbrush.VERSION, dependencies = "required-after:llibrary@[" + Paintbrush.LLIBRARY_VERSION + ",)")
 public class Paintbrush {
     public static final String VERSION = "0.1.1";
-    public static final String LLIBRARY_VERSION = "0.7.0";
+    public static final String LLIBRARY_VERSION = "0.7.2";
     @SidedProxy(serverSide = "net.ilexiconn.paintbrush.server.ProxyServer", clientSide = "net.ilexiconn.paintbrush.client.ProxyClient")
     public static ProxyServer proxy;
     public static SimpleNetworkWrapper networkWrapper;
